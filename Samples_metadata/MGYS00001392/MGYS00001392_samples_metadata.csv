@@ -1,0 +1,15 @@
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material
+ERS805486,MBR Sludge,SAMEA3498337,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
+ERS805487,MBR Sludge,SAMEA3498338,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
+ERS805488,MBR Sludge,SAMEA3498339,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
+ERS805489,MBR Sludge,SAMEA3498340,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
+ERS805490,MBR Sludge,SAMEA3498341,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
+ERS805491,MBR Sludge,SAMEA3498342,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
+ERS805492,ENR4_A,SAMEA3498343,ENR4_A,43.3792,43.7239,Russia,oil well,oil well,biofilm material
+ERS805493,ENR4_E,SAMEA3498344,ENR4_E,43.3792,43.7239,Russia,oil well,oil well,biofilm material
+ERS805494,ENR4_F,SAMEA3498345,ENR4_F,43.3792,43.7239,Russia,oil well,oil well,biofilm material
+ERS805495,ENR6_N3,SAMEA3498346,ENR6_N3,43.3792,43.7239,Russia,oil well,oil well,biofilm material
+ERS805496,Vetmed_Pskit,SAMEA3498347,Vetmed_Pskit,48.2549,16.4293,Austria,wastewater treatment plant,wastewater treatment plant,activated sludge
+ERS805497,Vetmed_23,SAMEA3498348,Vetmed_23,48.2549,16.4293,Austria,wastewater treatment plant,wastewater treatment plant,activated sludge
+ERS805498,GWW_HP_F1,SAMEA3498349,GWW_HP_F1,52.1489,10.5428,Germany,water well,water well,biofilm material
+ERS805499,GWW_HP_D,SAMEA3498350,GWW_HP_D,52.1489,10.5428,Germany,water well,water well,biofilm material

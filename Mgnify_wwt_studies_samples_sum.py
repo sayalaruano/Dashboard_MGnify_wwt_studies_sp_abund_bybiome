@@ -62,7 +62,7 @@ st.sidebar.write('The code for this project is available under the [MIT License]
 study_info, sample_info = load_study_data(all_data, selected_study)
 
 # Display study information
-st.subheader(f'Description')
+st.subheader(f'Description - {selected_study}')
 description = study_info['study_name'].values[0]
 st.text(description)
 

@@ -1,4 +1,10 @@
 pandas
 numpy
+scipy
+jsonapi-client
+requests
+plotly
+scikit-learn
+scikit-bio 
 streamlit
 streamlit-aggrid

@@ -1,6 +1,7 @@
 # Web app
 import streamlit as st
 from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
 import pandas as pd
 import numpy as np
 import glob
@@ -80,8 +81,13 @@ def load_study_data(all_data, selected_study):
 
     return study_info
 
+# Function to download the data
+@st.cache_data
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
+
 # Add a title and info about the app
-st.title('Summary of waste water treatment studies from Mgnify with more than 10 samples')
+st.title('Summary and EDA of waste water treatment studies from Mgnify')
 
 # Create a df with study ids and biomes
 filt_columns = ['study_id', 'biomes']
@@ -158,6 +164,28 @@ else:
     # Merge the abundance tables, keeping only the phyla that are present in both studies
     abund_table_merged = pd.merge(abund_table1, abund_table2, on='phylum', how='inner')
 
+    # Show the merged abundance table
+    st.subheader(f"Abundance table for {selected_studies[0]} and {selected_studies[1]}")
+    
+    # Display abundance table for the selected study
+    builder = GridOptionsBuilder.from_dataframe(abund_table_merged)
+    builder.configure_default_column(editable=True, groupable=True)
+    builder.configure_side_bar(filters_panel = True, columns_panel = True)
+    builder.configure_selection(selection_mode="multiple")
+    builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
+    go = builder.build()
+
+    AgGrid(abund_table_merged, gridOptions=go)
+
+    # Button to download the data
+    abund_table_csv = convert_df(abund_table_merged)
+    st.download_button(
+        label="Download abundance data as CSV",
+        data=abund_table_csv,
+        file_name=f'abund_table_{selected_studies[0]}_and_{selected_studies[1]}.csv',
+        mime='text/csv',
+    )
+
     # Transpose the abundance table and keep it as a df
     abund_table_merged = abund_table_merged.set_index('phylum').T
     #abund_table_merged.T
@@ -166,27 +194,23 @@ else:
     new_header = abund_table_merged.iloc[0]
     abund_table_merged = abund_table_merged[1:]
     abund_table_merged.columns = new_header
-    
-    # Show the merged abundance table
-    st.subheader(f"Abundance table for {selected_studies[0]} and {selected_studies[1]}")
-    # AgGrid(abund_table_merged, editable=True)
 
-    # Create a list of the samples from the merge abundance table
-    samples_list = abund_table_merged.index.tolist()
+    # Create a list of the analyses from the merge abundance table
+    analyses_list = abund_table_merged.index.tolist()
 
-    # Create a df with the samples and their study ids
-    samples_df = pd.DataFrame(samples_list, columns=['sample_id'])
+    # Create a df with the analyses and their study ids
+    analyses_df = pd.DataFrame(analyses_list, columns=['sample_id'])
 
-    # Add the study ids to the samples df
-    for sample in samples_list:
-        if sample in abund_table1.columns:
-            samples_df.loc[samples_df['sample_id'] == sample, 'study_id'] = selected_studies[0]
+    # Add the study ids to the analyses df
+    for analysis in analyses_list:
+        if analysis in abund_table1.columns:
+            analyses_df.loc[analyses_df['sample_id'] == analysis, 'study_id'] = selected_studies[0]
         else:
-            samples_df.loc[samples_df['sample_id'] == sample, 'study_id'] = selected_studies[1]
+            analyses_df.loc[analyses_df['sample_id'] == analysis, 'study_id'] = selected_studies[1]
 
     # Create a pca plot with the merged abundance table
     st.subheader('PCA plot')
-    st.write('The PCA plot shows the distribution of the samples from the two selected studies based on the abundance of the phyla present in both studies.')
+    st.write('The PCA plot shows the distribution of the analyses from the two selected studies based on the abundance of the phyla present in both studies.')
 
     # Create a PCA object
     pca = PCA(n_components=2)
@@ -204,7 +228,7 @@ else:
     pca_df = pd.DataFrame(data = pca_data, columns = ['PC1', 'PC2'])
 
     # Add the study ids to the PCA df
-    pca_df['study_id'] = samples_df['study_id'] 
+    pca_df['study_id'] = analyses_df['study_id'] 
 
     # Get biomes for the selected studies
     biome_study1 = studies_biomes.loc[studies_biomes['Study ID'] == selected_studies[0], 'Biomes']
@@ -240,7 +264,7 @@ else:
             tickfont=dict(size=18),
             titlefont=dict(size=20)
         ),
-        legend_title_text ='Study ID'
+        legend_title_text ='Study ID - Biome'
     )
 
     # Show pca plot
@@ -288,7 +312,7 @@ else:
 
     # Create PcoA plot
     st.subheader('PCoA plot with Bray-Curtis distance')
-    st.write('The PCoA plot shows the distribution of the samples from the two selected studies based on the Bray-Curtis distance between them.')
+    st.write('The PCoA plot shows the distribution of the analyses from the two selected studies based on the Bray-Curtis distance between them.')
     
     # Extract OTU names and sample names as numpy arrays
     otu_names = list(abund_table_merged.columns.values)
@@ -313,7 +337,7 @@ else:
     bc_pcoa_data = bc_pcoa_data.reset_index(drop=True)
 
     # Add the study ids to the PCA df
-    bc_pcoa_data['study_id'] = samples_df['study_id']
+    bc_pcoa_data['study_id'] = analyses_df['study_id']
 
     # Define conditions and values for filling the biome column
     conditions = [
@@ -343,7 +367,7 @@ else:
             tickfont=dict(size=18),
             titlefont=dict(size=20)
         ),
-        legend_title_text ='Study ID'
+        legend_title_text ='Study ID - Biome'
     )
 
     # Show pcoa plot

@@ -30,11 +30,11 @@ if 'studies_data' not in st.session_state:
     st.session_state.studies_data = load_studies_data("Mgnify_studies_wwt_shot_metag_assembly_more10samples.csv")
 
 # Add a title and info about the app
-st.title('Summary of waste water treatment studies from Mgnify with more than 10 samples')
+st.title('Summary and EDA of waste water treatment studies from Mgnify')
 
 with st.expander('About this app'):
     st.write('''
-    This app shows a summary of the waste water treatment studies from Mgnify with more than 10 samples. It includes informations about the studies and its samples.
+    This app shows a summary and teh exploratory data analysis of the waste water treatment studies from Mgnify with more than 10 samples. It includes informations about the studies and its samples.
     
     **Credits**
     - Developed by [Sebastián Ayala Ruano](https://sayalaruano.github.io/).

@@ -1,12 +1,12 @@
-sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material
-SRS3526275,STAS,SAMN09603372,This sample has been submitted by pda|cheyanchen on 2019-08-09; activated sludge metagenome,22.3964,114.1095,,,,
-SRS3619589,ST_SWH_STL_EFF,SAMN09603381,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,
-SRS3530135,SWHEFF,SAMN09603376,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,
-SRS3530132,SWHAS,SAMN09603375,This sample has been submitted by pda|cheyanchen on 2019-08-09; activated sludge metagenome,22.3964,114.1095,,,,
-SRS3616251,STLEFF,SAMN09603379,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,
-SRS3613830,STLAS,SAMN09603378,This sample has been submitted by pda|cheyanchen on 2019-08-09; activated sludge metagenome,22.3964,114.1095,,,,
-SRS3606952,STLIN,SAMN09603377,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,
-SRS3527095,STEFF,SAMN09603373,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,
-SRS3528376,SWHIN,SAMN09603374,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,
-SRS3525995,STIN_IN,SAMN09603371,This sample has been submitted by pda|cheyanchen on 2019-08-08; wastewater metagenome,22.3964,114.1095,,,,
-SRS3616366,ST_SWH_STL_IN,SAMN09603380,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids
+SRS3526275,STAS,SAMN09603372,This sample has been submitted by pda|cheyanchen on 2019-08-09; activated sludge metagenome,22.3964,114.1095,,,,,ERZ1714339
+SRS3619589,ST_SWH_STL_EFF,SAMN09603381,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,,ERZ1714338
+SRS3530135,SWHEFF,SAMN09603376,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,,ERZ1714337
+SRS3530132,SWHAS,SAMN09603375,This sample has been submitted by pda|cheyanchen on 2019-08-09; activated sludge metagenome,22.3964,114.1095,,,,,ERZ1714336
+SRS3616251,STLEFF,SAMN09603379,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,,ERZ1714335
+SRS3613830,STLAS,SAMN09603378,This sample has been submitted by pda|cheyanchen on 2019-08-09; activated sludge metagenome,22.3964,114.1095,,,,,ERZ1714334
+SRS3606952,STLIN,SAMN09603377,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,,ERZ1714333
+SRS3527095,STEFF,SAMN09603373,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,,ERZ1714332
+SRS3528376,SWHIN,SAMN09603374,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,,ERZ1714331
+SRS3525995,STIN_IN,SAMN09603371,This sample has been submitted by pda|cheyanchen on 2019-08-08; wastewater metagenome,22.3964,114.1095,,,,,ERZ1714330
+SRS3616366,ST_SWH_STL_IN,SAMN09603380,This sample has been submitted by pda|cheyanchen on 2019-08-09; wastewater metagenome,22.3964,114.1095,,,,,ERZ1714329

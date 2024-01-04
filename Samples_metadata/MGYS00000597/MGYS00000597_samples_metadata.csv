@@ -1,17 +1,17 @@
-sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material
-ERS1030613,Sludge,SAMEA3723464,Sludge,,,Israel,wastewater treatment plant,environmental feature,sludge
-ERS1030614,Effluent,SAMEA3723465,Effluent,,,Israel,wastewater treatment plant,environmental feature,liquid
-ERS1030615,Infiltration pool,SAMEA3723466,Infiltration pool,,,Israel,wastewater treatment plant,environmental feature,sediment
-ERS1030616,Control soil,SAMEA3723467,Control soil,,,Israel,wastewater treatment plant,environmental feature,soil
-ERS1030617,AT,SAMEA3723468,AT,,,Austria,wastewater treatment plant,Effluent,Effluent
-ERS1030618,CYP,SAMEA3723469,CYP,,,Cyprus,wastewater treatment plant,Effluent,Effluent
-ERS1030619,CYP-ANTH,SAMEA3723470,CYP-ANTH,,,Cyprus,wastewater treatment plant,Effluent,Effluent
-ERS1030620,DD,SAMEA3723471,DD,,,Germany,wastewater treatment plant,Effluent,Effluent
-ERS1030621,DDD,SAMEA3723472,DDD,,,Germany,wastewater treatment plant,Effluent,Effluent
-ERS1030622,DDL,SAMEA3723473,DDL,,,Germany,wastewater treatment plant,Effluent,Effluent
-ERS1030623,FR,SAMEA3723474,FR,,,France,wastewater treatment plant,Effluent,Effluent
-ERS1030624,IL,SAMEA3723475,IL,,,Israel,wastewater treatment plant,Effluent,Effluent
-ERS1030625,IT,SAMEA3723476,IT,,,Italy,wastewater treatment plant,Effluent,Effluent
-ERS1030626,NO,SAMEA3723477,NO,,,Norway,wastewater treatment plant,Effluent,Effluent
-ERS1030627,PT,SAMEA3723478,PT,,,Portugal,wastewater treatment plant,Effluent,Effluent
-ERS1030628,UK,SAMEA3723479,UK,,212.0,United Kingdom,wastewater treatment plant,Effluent,Effluent
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids
+ERS1030613,Sludge,SAMEA3723464,Sludge,,,Israel,wastewater treatment plant,environmental feature,sludge,ERR1201289
+ERS1030614,Effluent,SAMEA3723465,Effluent,,,Israel,wastewater treatment plant,environmental feature,liquid,ERR1201290
+ERS1030615,Infiltration pool,SAMEA3723466,Infiltration pool,,,Israel,wastewater treatment plant,environmental feature,sediment,ERR1201291
+ERS1030616,Control soil,SAMEA3723467,Control soil,,,Israel,wastewater treatment plant,environmental feature,soil,ERR1201292
+ERS1030617,AT,SAMEA3723468,AT,,,Austria,wastewater treatment plant,Effluent,Effluent,ERR1201293
+ERS1030618,CYP,SAMEA3723469,CYP,,,Cyprus,wastewater treatment plant,Effluent,Effluent,ERR1201294
+ERS1030619,CYP-ANTH,SAMEA3723470,CYP-ANTH,,,Cyprus,wastewater treatment plant,Effluent,Effluent,ERR1201295
+ERS1030620,DD,SAMEA3723471,DD,,,Germany,wastewater treatment plant,Effluent,Effluent,ERR1201296
+ERS1030621,DDD,SAMEA3723472,DDD,,,Germany,wastewater treatment plant,Effluent,Effluent,ERR1201297
+ERS1030622,DDL,SAMEA3723473,DDL,,,Germany,wastewater treatment plant,Effluent,Effluent,ERR1201298
+ERS1030623,FR,SAMEA3723474,FR,,,France,wastewater treatment plant,Effluent,Effluent,ERR1201299
+ERS1030624,IL,SAMEA3723475,IL,,,Israel,wastewater treatment plant,Effluent,Effluent,ERR1201300
+ERS1030625,IT,SAMEA3723476,IT,,,Italy,wastewater treatment plant,Effluent,Effluent,ERR1201301
+ERS1030626,NO,SAMEA3723477,NO,,,Norway,wastewater treatment plant,Effluent,Effluent,ERR1201302
+ERS1030627,PT,SAMEA3723478,PT,,,Portugal,wastewater treatment plant,Effluent,Effluent,ERR1201303
+ERS1030628,UK,SAMEA3723479,UK,,212.0,United Kingdom,wastewater treatment plant,Effluent,Effluent,ERR1201304

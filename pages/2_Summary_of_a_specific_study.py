@@ -110,7 +110,7 @@ st.sidebar.header('Contact')
 st.sidebar.write('If you have any comments or suggestions about this work, please [create an issue](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies/issues/new) in the GitHub repository of this project.')
     
 # Add a title and info about the app
-st.title('Summary of waste water treatment studies from Mgnify with more than 10 samples')
+st.title('Summary and EDA of waste water treatment studies from Mgnify')
 
 # Load data for the selected study
 study_info, sample_info = load_study_data(st.session_state.studies_data, selected_study)
@@ -188,9 +188,35 @@ st.download_button(
     mime='text/csv',
 )
 
+# Reshape abundance df so that the assembly_run_ids become a column
+abund_df_reshaped = abund_table.melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
+
+# Split the multiple IDs in the assembly_run_ids column of df1
+sample_info['assembly_run_ids'] = sample_info['assembly_run_ids'].str.split(';')
+
+# Explode the dataframe based on the assembly_run_ids column
+sample_info_exploded = sample_info.explode('assembly_run_ids')
+
+# Merge dataframes on the 'assembly_run_ids' column
+samples_df = pd.merge(sample_info_exploded, abund_df_reshaped, left_on='assembly_run_ids', right_on='assembly_run_ids')
+
+# Filter the merged df to keep unique rows based on the assembly_run_ids column
+samples_df = samples_df.drop_duplicates(subset=['assembly_run_ids'])
+
+# Filter the merged df to keep only the relevant columns
+samples_df = samples_df[['assembly_run_ids', 'sample_id', 'biome_feature', 'biome_material']].reset_index(drop=True)
+
+# Combine biome_feature and biome_material columnsm if there is info on the columns, otherwise add 'NA'
+samples_df['biome_feature'] = samples_df['biome_feature'].fillna('NA')
+samples_df['biome_material'] = samples_df['biome_material'].fillna('NA')
+samples_df['biome'] = samples_df['biome_feature'] + ' - ' + samples_df['biome_material']
+
+# Sort df by assembly_run_ids
+samples_df = samples_df.sort_values(by=['assembly_run_ids']).reset_index(drop=True)
+
 # Create PCA plot
 st.subheader("PCA plot")
-st.write('The PCA plot shows the distribution of the samples from the two selected studies based on the abundance of the phyla present in both studies.')
+st.write('The PCA plot shows the distribution of the analyses from the two selected studies based on the abundance of the phyla present in both studies.')
 
 # Transpose abundance table
 abund_table = abund_table.set_index('phylum').T
@@ -214,8 +240,12 @@ pca_data = pca.transform(abund_values_std)
 # Create a df with the PCA data
 pca_df = pd.DataFrame(data = pca_data, columns = ['PC1', 'PC2'])
 
+# Add the biome to the PCA df
+pca_df['biome'] = samples_df['biome']
+
 # Create a plotly figure
-pca_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8, 
+pca_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8,
+                      color='biome', 
                       hover_name=abund_table.index,
                       color_discrete_sequence=px.colors.qualitative.Plotly)
 
@@ -231,7 +261,7 @@ pca_plot.update_layout(
         tickfont=dict(size=18),
         titlefont=dict(size=20)
     ),
-    legend_title_text ='Study ID'
+    legend_title_text ='Biome'
 )
 
 # Show pca plot
@@ -239,17 +269,17 @@ st.plotly_chart(pca_plot, use_container_width=True)
 
 # Create PcoA plot
 st.subheader('PCoA plot with Bray-Curtis distance')
-st.write('The PCoA plot shows the distribution of the samples from the two selected studies based on the Bray-Curtis distance between them.')
+st.write('The PCoA plot shows the distribution of the analyses from the two selected studies based on the Bray-Curtis distance between them.')
 
-# Extract OTU names and sample names as numpy arrays
+# Extract OTU names and analyses names as numpy arrays
 otu_names = list(abund_table.columns.values)
-sample_names = list(abund_table.index.values)
+analyses_names = list(abund_table.index.values)
 
 # Convert abundance table to numpy array
 abund_table_mat = abund_table.to_numpy()
 
 # Obtain bray-curtis distance matrix
-bc_mat = beta_diversity("braycurtis", abund_table_mat, sample_names)
+bc_mat = beta_diversity("braycurtis", abund_table_mat, analyses_names)
 
 # Replace NaN values with 0
 bc_mat = np.nan_to_num(bc_mat.data, nan=0.0)
@@ -263,10 +293,14 @@ bc_pcoa_data = pd.DataFrame(data = bc_pcoa.samples[['PC1', 'PC2']])
 # Reset index
 bc_pcoa_data = bc_pcoa_data.reset_index(drop=True)
 
+# Add the biome to the PcoA df
+bc_pcoa_data['biome'] = samples_df['biome']
+
 # Create a plotly figure
-pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, 
-                       color_discrete_sequence=px.colors.qualitative.Plotly,
-                       hover_name=abund_table.index)
+pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', 
+                       opacity=0.8, color='biome', 
+                       hover_name=abund_table.index,
+                       color_discrete_sequence=px.colors.qualitative.Plotly)
 
 # Add title and axis labels
 pcoa_plot.update_layout(
@@ -280,7 +314,7 @@ pcoa_plot.update_layout(
         tickfont=dict(size=18),
         titlefont=dict(size=20)
     ),
-    legend_title_text ='Study ID'
+    legend_title_text ='Biome'
 )
 
 # Show pcoa plot

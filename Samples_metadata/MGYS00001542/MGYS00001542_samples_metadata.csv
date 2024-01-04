@@ -1,18 +1,18 @@
-sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material
-ERS632924,AAW-3-2012,SAMEA3180052,Aalborg West Q3 2012,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632917,AAW-4-2010,SAMEA3180045,Aalborg West Q4 2010,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632927,EJB-4-2011,SAMEA3180055,Ejby Moelle Q4 2011,55.3995,10.4148,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632929,EGA-2-2011,SAMEA3180057,Egaa Q2 2011,56.2131,10.2425,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632918,AAW-5-2010-A,SAMEA3180046,Aalborg West Q5 2010 A,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632919,AAW-5-2010-B,SAMEA3180047,Aalborg West Q2 2010 B,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632915,Aalborg East Q2 2012,SAMEA3180043,Aalborg East Q2 2012,57.0452,10.0458,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632916,Aalborg West Q2 2010,SAMEA3180044,Aalborg West Q2 2010,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632920,Aalborg West Q5 2010 C,SAMEA3180048,Aalborg West Q5 2010 C,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632921,Aalborg West Q4 2011,SAMEA3180049,Aalborg West Q4 2011,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632922,Aalborg West Q1 2012,SAMEA3180050,Aalborg West Q1 2012,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632923,Aalborg West Q2 2012,SAMEA3180051,Aalborg West Q2 2012,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632925,Hjoerring Q4 2011,SAMEA3180053,Hjoerring Q4 2011,57.4213,9.9754,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632926,Ejby Moelle Q2 2011,SAMEA3180054,Ejby Moelle Q2 2011,55.3995,10.4148,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632928,Ejby Moelle Q2 2012,SAMEA3180056,Ejby Moelle Q2 2012,55.3995,10.4148,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632930,Egaa Q4 2011,SAMEA3180058,Egaa Q4 2011,56.2131,10.2425,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
-ERS632931,Egaa Q2 2012,SAMEA3180059,Egaa Q2 2012,56.2131,10.2425,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids
+ERS632924,AAW-3-2012,SAMEA3180052,Aalborg West Q3 2012,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764620
+ERS632917,AAW-4-2010,SAMEA3180045,Aalborg West Q4 2010,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764613
+ERS632927,EJB-4-2011,SAMEA3180055,Ejby Moelle Q4 2011,55.3995,10.4148,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764614
+ERS632929,EGA-2-2011,SAMEA3180057,Egaa Q2 2011,56.2131,10.2425,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764618
+ERS632918,AAW-5-2010-A,SAMEA3180046,Aalborg West Q5 2010 A,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764622
+ERS632919,AAW-5-2010-B,SAMEA3180047,Aalborg West Q2 2010 B,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764624
+ERS632915,Aalborg East Q2 2012,SAMEA3180043,Aalborg East Q2 2012,57.0452,10.0458,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632916,Aalborg West Q2 2010,SAMEA3180044,Aalborg West Q2 2010,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632920,Aalborg West Q5 2010 C,SAMEA3180048,Aalborg West Q5 2010 C,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632921,Aalborg West Q4 2011,SAMEA3180049,Aalborg West Q4 2011,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632922,Aalborg West Q1 2012,SAMEA3180050,Aalborg West Q1 2012,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632923,Aalborg West Q2 2012,SAMEA3180051,Aalborg West Q2 2012,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632925,Hjoerring Q4 2011,SAMEA3180053,Hjoerring Q4 2011,57.4213,9.9754,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632926,Ejby Moelle Q2 2011,SAMEA3180054,Ejby Moelle Q2 2011,55.3995,10.4148,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632928,Ejby Moelle Q2 2012,SAMEA3180056,Ejby Moelle Q2 2012,55.3995,10.4148,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,
+ERS632930,Egaa Q4 2011,SAMEA3180058,Egaa Q4 2011,56.2131,10.2425,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR712390
+ERS632931,Egaa Q2 2012,SAMEA3180059,Egaa Q2 2012,56.2131,10.2425,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,

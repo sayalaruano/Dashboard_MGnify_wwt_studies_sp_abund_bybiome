@@ -248,6 +248,9 @@ else:
     # Add biome in the study id column 
     pca_df['study_id'] = pca_df['study_id'].str.cat(pca_df['biome'], sep=' - ')
 
+    # Explained variance ratio
+    explained_var_ratio = pca.explained_variance_ratio_
+
     # Create a plotly figure
     pca_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8, color='study_id', 
                       hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
@@ -255,14 +258,16 @@ else:
     # Add title and axis labels
     pca_plot.update_layout(
         xaxis=dict(
-            title='PC1',
+            title=f'PC1 ({explained_var_ratio[0]:.2%})',
             tickfont=dict(size=18),
-            titlefont=dict(size=20)
+            titlefont=dict(size=20),
+            showgrid=False
         ),
         yaxis=dict(
-            title='PC2',
+            title=f'PC2 ({explained_var_ratio[1]:.2%})',
             tickfont=dict(size=18),
-            titlefont=dict(size=20)
+            titlefont=dict(size=20),
+            showgrid=False
         ),
         legend_title_text ='Study ID - Biome'
     )
@@ -297,12 +302,14 @@ else:
         xaxis=dict(
             title='PC1',
             tickfont=dict(size=18),
-            titlefont=dict(size=20)
+            titlefont=dict(size=20),
+            showgrid=False
         ),
         yaxis=dict(
             title='PC2',
             tickfont=dict(size=18),
-            titlefont=dict(size=20)
+            titlefont=dict(size=20),
+            showgrid=False
         ),
         legend_title_text ='Cluster'
     )
@@ -360,12 +367,14 @@ else:
         xaxis=dict(
             title='PC1',
             tickfont=dict(size=18),
-            titlefont=dict(size=20)
+            titlefont=dict(size=20),
+            showgrid=False
         ),
         yaxis=dict(
             title='PC2',
             tickfont=dict(size=18),
-            titlefont=dict(size=20)
+            titlefont=dict(size=20),
+            showgrid=False
         ),
         legend_title_text ='Study ID - Biome'
     )

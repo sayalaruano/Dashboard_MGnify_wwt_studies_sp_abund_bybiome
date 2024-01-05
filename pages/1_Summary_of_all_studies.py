@@ -77,7 +77,7 @@ st.header('Plots to summarize all studies')
 st.subheader("Number of samples per study")
 
 hist_samples = px.histogram(st.session_state.studies_data, x="n_samples", 
-                            nbins=10, opacity=0.8, color_discrete_sequence=px.colors.qualitative.Plotly)
+                            nbins=25, opacity=0.8, color_discrete_sequence=px.colors.qualitative.Plotly)
 
 hist_samples.update_layout(
     xaxis=dict(title='Number of samples', tickfont=dict(size=18), titlefont=dict(size=20)),
@@ -177,6 +177,9 @@ pca_df = pca_df.merge(st.session_state.studies_data[['study_id', 'biomes']], on=
 # Add biome in the study id column 
 pca_df['study_id'] = pca_df['study_id'].str.cat(pca_df['biomes'], sep=' - ')
 
+# Explained variance ratio
+explained_var_ratio = pca.explained_variance_ratio_
+
 # Plot PCA colored by biome
 st.subheader("PCA plot of the analyses from all studies colored by biome")
 
@@ -188,14 +191,16 @@ pca_biome.update_traces(
     marker=dict(size=6)
     ).update_layout(
     xaxis=dict(
-        title='PC1',
+        title=f'PC1 ({explained_var_ratio[0]:.2%})',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     yaxis=dict(
-        title='PC2',
+        title=f'PC2 ({explained_var_ratio[1]:.2%})',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     legend_title=dict(text='Biome', font=dict(size=20)),
     legend=dict(font=dict(size=16))
@@ -250,12 +255,14 @@ pcoa_biome.update_traces(
     xaxis=dict(
         title='PC1',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     yaxis=dict(
         title='PC2',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     legend_title=dict(text='Biome', font=dict(size=20)),
     legend=dict(font=dict(size=16))
@@ -274,14 +281,16 @@ pca_studyid_biome.update_traces(
     marker=dict(size=6)
     ).update_layout(
     xaxis=dict(
-        title='PC1',
+        title=f'PC1 ({explained_var_ratio[0]:.2%})',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     yaxis=dict(
-        title='PC2',
+        title=f'PC2 ({explained_var_ratio[1]:.2%})',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     legend_title=dict(text='Study ID - Biome', font=dict(size=16)),
     legend=dict(font=dict(size=12))
@@ -302,12 +311,14 @@ pcoa_studyid_biome.update_traces(
     xaxis=dict(
         title='PC1',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     yaxis=dict(
         title='PC2',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     legend_title=dict(text='Study ID - Biome', font=dict(size=16)),
     legend=dict(font=dict(size=12))

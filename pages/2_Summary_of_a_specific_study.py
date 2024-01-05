@@ -243,6 +243,9 @@ pca_df = pd.DataFrame(data = pca_data, columns = ['PC1', 'PC2'])
 # Add the biome to the PCA df
 pca_df['biome'] = samples_df['biome']
 
+# Explained variance ratio
+explained_var_ratio = pca.explained_variance_ratio_
+
 # Create a plotly figure
 pca_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8,
                       color='biome', 
@@ -252,14 +255,16 @@ pca_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8,
 # Add title and axis labels
 pca_plot.update_layout(
     xaxis=dict(
-        title='PC1',
+        title=f'PC1 ({explained_var_ratio[0]:.2%})',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     yaxis=dict(
-        title='PC2',
+        title=f'PC2 ({explained_var_ratio[1]:.2%})',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     legend_title_text ='Biome'
 )
@@ -307,12 +312,14 @@ pcoa_plot.update_layout(
     xaxis=dict(
         title='PC1',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     yaxis=dict(
         title='PC2',
         tickfont=dict(size=18),
-        titlefont=dict(size=20)
+        titlefont=dict(size=20),
+        showgrid=False
     ),
     legend_title_text ='Biome'
 )

@@ -266,7 +266,8 @@ pca_plot.update_layout(
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title_text ='Biome'
+    legend_title=dict(text='Biome', font=dict(size=20)),
+    legend=dict(font=dict(size=16))
 )
 
 # Show pca plot
@@ -321,7 +322,8 @@ pcoa_plot.update_layout(
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title_text ='Biome'
+    legend_title=dict(text='Biome', font=dict(size=20)),
+    legend=dict(font=dict(size=16))
 )
 
 # Show pcoa plot

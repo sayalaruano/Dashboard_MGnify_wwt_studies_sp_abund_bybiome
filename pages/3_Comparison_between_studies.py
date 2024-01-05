@@ -269,7 +269,8 @@ else:
             titlefont=dict(size=20),
             showgrid=False
         ),
-        legend_title_text ='Study ID - Biome'
+        legend_title=dict(text='Study ID - Biome', font=dict(size=20)),
+        legend=dict(font=dict(size=16))
     )
 
     # Show pca plot
@@ -311,7 +312,8 @@ else:
             titlefont=dict(size=20),
             showgrid=False
         ),
-        legend_title_text ='Cluster'
+        legend_title=dict(text='Cluster', font=dict(size=20)),
+        legend=dict(font=dict(size=16))
     )
 
     # Show the plot
@@ -376,7 +378,8 @@ else:
             titlefont=dict(size=20),
             showgrid=False
         ),
-        legend_title_text ='Study ID - Biome'
+        legend_title=dict(text='Study ID - Biome', font=dict(size=20)),
+        legend=dict(font=dict(size=16))
     )
 
     # Show pcoa plot

@@ -28,54 +28,64 @@ st.set_page_config(
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Function to load abundance table for a specific study
 @st.cache_data
-def load_abund_table(selected_study):
-    # Set the file name 
+# Function to load abundance table for a specific study
+def load_abund_table(selected_study, phylum):
+    # Set the folder name 
     folder_path = f"Abundance_tables/{selected_study}/"
-    filename = os.path.join(folder_path, f"{selected_study}*phylum_taxonomy*.tsv")
 
-    print(filename)
-    # Use glob to find files that match the pattern
-    file = glob.glob(filename)
-    print(file)
+    # Broad pattern to initially match files
+    broad_pattern = f"{selected_study}*taxonomy*.csv"
+    file_list = glob.glob(os.path.join(folder_path, broad_pattern))
 
-    if not file:
+    if phylum:
+        # Filtering for phylum taxonomy files
+        filtered_files = [f for f in file_list if 'phylum_taxonomy' in f]
+    else:
+        # Filtering out unwanted files (those with '_phylum_')
+        filtered_files = [f for f in file_list if '_phylum_' not in f]
+
+    # Check if the filtered list is not empty
+    if filtered_files:
+        filename = filtered_files[0]  # Selecting the first matching file
+    else:
         print(f"No files found for the study '{selected_study}' in folder '{folder_path}'.")
         return None
-    
-    # Take the first file found (you can modify this if you expect multiple files)
-    file_path = file[0]
-    
+
     # Load abundance table for the study
-    abund_table = pd.read_csv(file_path, sep='\t')
+    abund_table = pd.read_csv(filename, sep=',')
     
     return abund_table
 
 # Function to preprocess abundance table for a specific study
-def preprocess_abund_table(abund_table):
-    # Delete kingdom and superkingdom columns
-    if 'superkingdom' in abund_table.columns:
-        abund_table = abund_table.drop(columns=['kingdom', 'superkingdom'])
-    else:
-        abund_table = abund_table.drop(columns=['kingdom'])
-
-    # Delete rows with unassigned phylum
-    abund_table = abund_table[abund_table['phylum'] != 'Unassigned']
-
-    # Delete rows that contain 'Candidatus' or 'candidate'
-    abund_table = abund_table[~abund_table['phylum'].str.contains('Candidatus')]
-    abund_table = abund_table[~abund_table['phylum'].str.contains('candidate')]
+def preprocess_abund_table(abund_table, phylum):
+    # Delete NaN rows
+    abund_table = abund_table.dropna(how='all')
+    if phylum:
+        # Delete kingdom and superkingdom columns
+        if 'superkingdom' in abund_table.columns:
+            abund_table = abund_table.drop(columns=['superkingdom', 'kingdom'])
+        else:
+            abund_table = abund_table.drop(columns=['kingdom'])
+        
+         # Set the phylum column as index
+        abund_table = abund_table.set_index('phylum')
     
-    # Reset index
-    abund_table = abund_table.reset_index(drop=True)
+    else:
+        # Delete extra taxonomic columns 
+        if 'Superkingdom' in abund_table.columns:
+            abund_table = abund_table.drop(columns=['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
+        else:
+            abund_table = abund_table.drop(columns=['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
+        
+         # Set the genus column as index
+        abund_table = abund_table.set_index('Genus')
     
     return abund_table
 
 # Function to load data for a specific study
 @st.cache_data
 def load_study_data(all_data, selected_study):
-    
     # Filter data for the selected study
     study_info = all_data[all_data['study_id'] == selected_study]
 
@@ -85,6 +95,28 @@ def load_study_data(all_data, selected_study):
 @st.cache_data
 def convert_df(df):
     return df.to_csv().encode('utf-8')
+
+# Add info on the sidebar
+# Select study
+st.sidebar.header('How it works?')
+
+st.sidebar.write('Select a taxonomic rank in the sidebar to make the comparison between the studies in the main panel.')
+
+# Create a selectbox to choose the taxonomic rank
+tax_rank = st.sidebar.selectbox(
+    "Select Taxonomic Rank:",
+    options=["Phylum", "Genus"]
+)
+
+# Add aditional info
+st.sidebar.header('Data')
+st.sidebar.write('The data used in this app was obtained from [Mgnify](https://www.ebi.ac.uk/metagenomics/api/latest/) using the scripts available in this [GitHub repository](https://github.com/Multiomics-Analytics-Group/Retrieve_info_MGnifyAPI)')
+
+st.sidebar.header('Code availability')
+st.sidebar.write('The code for this project is available under the [MIT License](https://mit-license.org/) in this [GitHub repo](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies). If you use or modify the source code of this project, please provide the proper attributions for this work.')
+
+st.sidebar.header('Contact')
+st.sidebar.write('If you have any comments or suggestions about this work, please [create an issue](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies/issues/new) in the GitHub repository of this project.')
 
 # Add a title and info about the app
 st.title('Summary and EDA of waste water treatment studies from Mgnify')
@@ -156,29 +188,57 @@ else:
         )
     
     # Load and preprocess abundance tables for the selected studies and store in independent variables
-    abund_table1 = load_abund_table(selected_studies[0])
-    abund_table1 = preprocess_abund_table(abund_table1)
-    abund_table2 = load_abund_table(selected_studies[1])
-    abund_table2 = preprocess_abund_table(abund_table2)
+    if tax_rank == 'Phylum':
+        abund_table1 = load_abund_table(selected_studies[0], phylum=True)
+        abund_table1 = preprocess_abund_table(abund_table1, phylum=True)
+        abund_table2 = load_abund_table(selected_studies[1], phylum=True)
+        abund_table2 = preprocess_abund_table(abund_table2, phylum=True)
+    else:  # Genus
+        abund_table1 = load_abund_table(selected_studies[0], phylum=False)
+        abund_table1 = preprocess_abund_table(abund_table1, phylum=False)
+        abund_table2 = load_abund_table(selected_studies[1], phylum=False)
+        abund_table2 = preprocess_abund_table(abund_table2, phylum=False)
 
-    # Merge the abundance tables, keeping only the phyla that are present in both studies
-    abund_table_merged = pd.merge(abund_table1, abund_table2, on='phylum', how='inner')
+    # Add a row with the study ID for all samples in the current study
+    study_id_row1 = pd.Series(selected_studies[0], index=abund_table1.columns)
+    study_id_row2 = pd.Series(selected_studies[1], index=abund_table2.columns)
+
+    # Add the study id row to the abundance table
+    abund_table1 = pd.concat([pd.DataFrame([study_id_row1]), abund_table1])
+    abund_table2 = pd.concat([pd.DataFrame([study_id_row2]), abund_table2])
+
+    # Merge the abundance tables
+    merged_df = pd.concat([abund_table1, abund_table2], axis=1)
+
+    # Fill NaN values with 0
+    merged_df = merged_df.fillna(0)
+
+    # Transpose the DataFrame
+    merged_df_transp = merged_df.T
+
+    # Rename study_id column
+    merged_df_transp = merged_df_transp.rename(columns={0: 'study_id'})
+
+    # Extract the study_id column and remove it from the DataFrame
+    study_id = merged_df_transp['study_id']
+    merged_df_transp = merged_df_transp.drop(columns=['study_id'])
+    merge_df = merged_df_transp.T
 
     # Show the merged abundance table
     st.subheader(f"Abundance table for {selected_studies[0]} and {selected_studies[1]}")
     
     # Display abundance table for the selected study
-    builder = GridOptionsBuilder.from_dataframe(abund_table_merged)
+    builder = GridOptionsBuilder.from_dataframe(merged_df_transp)
     builder.configure_default_column(editable=True, groupable=True)
     builder.configure_side_bar(filters_panel = True, columns_panel = True)
     builder.configure_selection(selection_mode="multiple")
     builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
     go = builder.build()
 
-    AgGrid(abund_table_merged, gridOptions=go)
+    AgGrid(merged_df_transp, gridOptions=go)
 
     # Button to download the data
-    abund_table_csv = convert_df(abund_table_merged)
+    abund_table_csv = convert_df(merged_df_transp)
     st.download_button(
         label="Download abundance data as CSV",
         data=abund_table_csv,
@@ -186,37 +246,11 @@ else:
         mime='text/csv',
     )
 
-    # Transpose the abundance table and keep it as a df
-    abund_table_merged = abund_table_merged.set_index('phylum').T
-    #abund_table_merged.T
-
-    # Set the first row as the header
-    new_header = abund_table_merged.iloc[0]
-    abund_table_merged = abund_table_merged[1:]
-    abund_table_merged.columns = new_header
-
-    # Create a list of the analyses from the merge abundance table
-    analyses_list = abund_table_merged.index.tolist()
-
-    # Create a df with the analyses and their study ids
-    analyses_df = pd.DataFrame(analyses_list, columns=['sample_id'])
-
-    # Add the study ids to the analyses df
-    for analysis in analyses_list:
-        if analysis in abund_table1.columns:
-            analyses_df.loc[analyses_df['sample_id'] == analysis, 'study_id'] = selected_studies[0]
-        else:
-            analyses_df.loc[analyses_df['sample_id'] == analysis, 'study_id'] = selected_studies[1]
-
-    # Create a pca plot with the merged abundance table
-    st.subheader('PCA plot')
-    st.write('The PCA plot shows the distribution of the analyses from the two selected studies based on the abundance of the phyla present in both studies.')
-
     # Create a PCA object
     pca = PCA(n_components=2)
 
     # Standardize the data
-    abund_values_std = StandardScaler().fit_transform(abund_table_merged)
+    abund_values_std = StandardScaler().fit_transform(merged_df_transp)
 
     # Fit the PCA object to the standardized data
     pca.fit_transform(abund_values_std)
@@ -225,34 +259,26 @@ else:
     pca_data = pca.transform(abund_values_std)
 
     # Create a df with the PCA data
-    pca_df = pd.DataFrame(data = pca_data, columns = ['PC1', 'PC2'])
+    pca_df = pd.DataFrame(data = pca_data, columns = ['PC1', 'PC2'], index=merged_df.columns)
 
-    # Add the study ids to the PCA df
-    pca_df['study_id'] = analyses_df['study_id'] 
+    # Add study_id column
+    pca_df['study_id'] = study_id
 
-    # Get biomes for the selected studies
-    biome_study1 = studies_biomes.loc[studies_biomes['Study ID'] == selected_studies[0], 'Biomes']
-    biome_study2 = studies_biomes.loc[studies_biomes['Study ID'] == selected_studies[1], 'Biomes']
+    # Add biome column to the PCA df 
+    pca_df = pca_df.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
 
-    # Define conditions and values for filling the biome column
-    conditions = [
-        (pca_df['study_id'] == selected_studies[0]),  
-        (pca_df['study_id'] == selected_studies[1]) 
-    ]
-
-    values = [biome_study1, biome_study2]
-
-    # Create a new column based on conditions
-    pca_df['biome'] = np.select(conditions, values, default='Unknown')
-    
     # Add biome in the study id column 
-    pca_df['study_id'] = pca_df['study_id'].str.cat(pca_df['biome'], sep=' - ')
+    pca_df['study_id'] = pca_df['study_id'].str.cat(pca_df['biomes'], sep=' - ')
 
     # Explained variance ratio
     explained_var_ratio = pca.explained_variance_ratio_
 
+    # Create a pca plot with the merged abundance table
+    st.subheader('PCA plot')
+    st.write('The PCA plot shows the distribution of the analyses from the two selected studies based on the abundance of the taxa present in both studies.')
+
     # Create a plotly figure
-    pca_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8, color='study_id', 
+    pca_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8, color='biomes', 
                       hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
 
     # Add title and axis labels
@@ -318,20 +344,16 @@ else:
 
     # Show the plot
     st.plotly_chart(clust_plot, use_container_width=True)
-
-    # Create PcoA plot
-    st.subheader('PCoA plot with Bray-Curtis distance')
-    st.write('The PCoA plot shows the distribution of the analyses from the two selected studies based on the Bray-Curtis distance between them.')
     
-    # Extract OTU names and sample names as numpy arrays
-    otu_names = list(abund_table_merged.columns.values)
-    sample_names = list(abund_table_merged.index.values)
+    # Extract analyses names as numpy arrays
+    analyses_names = list(merged_df_transp.index.values)
 
     # Convert abundance table to numpy array
-    abund_table_merged_mat = abund_table_merged.to_numpy()
+    abund_table_merged_mat = merged_df_transp.apply(pd.to_numeric, errors='coerce').fillna(0).to_numpy()
+    # print(type(abund_table_merged_mat))
 
     # Obtain bray-curtis distance matrix
-    bc_mat = beta_diversity("braycurtis", abund_table_merged_mat, sample_names)
+    bc_mat = beta_diversity("braycurtis", abund_table_merged_mat, analyses_names)
 
     # Replace NaN values with 0
     bc_mat = np.nan_to_num(bc_mat.data, nan=0.0)
@@ -340,28 +362,29 @@ else:
     bc_pcoa = pcoa(bc_mat)
 
     # Extract the data to plot the PcoA
-    bc_pcoa_data = pd.DataFrame(data = bc_pcoa.samples[['PC1', 'PC2']])
+    bc_pcoa_data = pd.DataFrame(data = bc_pcoa.samples, columns = ['PC1', 'PC2'])
     
     # Reset index
     bc_pcoa_data = bc_pcoa_data.reset_index(drop=True)
 
-    # Add the study ids to the PCA df
-    bc_pcoa_data['study_id'] = analyses_df['study_id']
+    # Add analyses names as index
+    bc_pcoa_data.index = merged_df.columns
 
-    # Define conditions and values for filling the biome column
-    conditions = [
-        (bc_pcoa_data['study_id'] == selected_studies[0]),  
-        (bc_pcoa_data['study_id'] == selected_studies[1]) 
-    ]
+    # Add study_id column to the PCoA df
+    bc_pcoa_data['study_id'] = study_id
 
-    # Create a new column based on conditions
-    bc_pcoa_data['biome'] = np.select(conditions, values, default='Unknown')
-    
+    # Add biome column to the PCoA df 
+    bc_pcoa_data = bc_pcoa_data.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
+
     # Add biome in the study id column 
-    bc_pcoa_data['study_id'] = bc_pcoa_data['study_id'].str.cat(bc_pcoa_data['biome'], sep=' - ')
+    bc_pcoa_data['study_id'] = bc_pcoa_data['study_id'].str.cat(bc_pcoa_data['biomes'], sep=' - ')
+
+    # Create PcoA plot
+    st.subheader('PCoA plot with Bray-Curtis distance')
+    st.write('The PCoA plot shows the distribution of the analyses from the two selected studies based on the Bray-Curtis distance between them.')
 
     # Create a plotly figure
-    pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, color='study_id', 
+    pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, color='biomes', 
                       hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
     
     # Add title and axis labels
@@ -384,16 +407,6 @@ else:
 
     # Show pcoa plot
     st.plotly_chart(pcoa_plot, use_container_width=True)
-
-# Add info on the sidebar
-st.sidebar.header('Data')
-st.sidebar.write('The data used in this app was obtained from [Mgnify](https://www.ebi.ac.uk/metagenomics/api/latest/) using the scripts available in this [GitHub repository](https://github.com/Multiomics-Analytics-Group/Retrieve_info_MGnifyAPI)')
-
-st.sidebar.header('Code availability')
-st.sidebar.write('The code for this project is available under the [MIT License](https://mit-license.org/) in this [GitHub repo](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies). If you use or modify the source code of this project, please provide the proper attributions for this work.')
-
-st.sidebar.header('Contact')
-st.sidebar.write('If you have any comments or suggestions about this work, please [create an issue](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies/issues/new) in the GitHub repository of this project.')
     
 
 

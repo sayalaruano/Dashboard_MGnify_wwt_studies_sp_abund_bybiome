@@ -25,47 +25,59 @@ st.set_page_config(
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Function to load abundance table for a specific study
+
 @st.cache_data
-def load_abund_table(selected_study):
-    # Set the file name 
+# Function to load abundance table for a specific study
+def load_abund_table(selected_study, phylum):
+    # Set the folder name 
     folder_path = f"Abundance_tables/{selected_study}/"
-    filename = os.path.join(folder_path, f"{selected_study}*phylum_taxonomy*.tsv")
 
-    print(filename)
-    # Use glob to find files that match the pattern
-    file = glob.glob(filename)
-    print(file)
+    # Broad pattern to initially match files
+    broad_pattern = f"{selected_study}*taxonomy*.csv"
+    file_list = glob.glob(os.path.join(folder_path, broad_pattern))
 
-    if not file:
+    if phylum:
+        # Filtering for phylum taxonomy files
+        filtered_files = [f for f in file_list if 'phylum_taxonomy' in f]
+    else:
+        # Filtering out unwanted files (those with '_phylum_')
+        filtered_files = [f for f in file_list if '_phylum_' not in f]
+
+    # Check if the filtered list is not empty
+    if filtered_files:
+        filename = filtered_files[0]  # Selecting the first matching file
+    else:
         print(f"No files found for the study '{selected_study}' in folder '{folder_path}'.")
         return None
-    
-    # Take the first file found (you can modify this if you expect multiple files)
-    file_path = file[0]
-    
+
     # Load abundance table for the study
-    abund_table = pd.read_csv(file_path, sep='\t')
+    abund_table = pd.read_csv(filename, sep=',')
     
     return abund_table
 
 # Function to preprocess abundance table for a specific study
-def preprocess_abund_table(abund_table):
-    # Delete kingdom and superkingdom columns
-    if 'superkingdom' in abund_table.columns:
-        abund_table = abund_table.drop(columns=['kingdom', 'superkingdom'])
-    else:
-        abund_table = abund_table.drop(columns=['kingdom'])
-
-    # Delete rows with unassigned phylum
-    abund_table = abund_table[abund_table['phylum'] != 'Unassigned']
-
-    # Delete rows that contain 'Candidatus' or 'candidate'
-    abund_table = abund_table[~abund_table['phylum'].str.contains('Candidatus')]
-    abund_table = abund_table[~abund_table['phylum'].str.contains('candidate')]
+def preprocess_abund_table(abund_table, phylum):
+    # Delete NaN rows
+    abund_table = abund_table.dropna(how='all')
+    if phylum:
+        # Delete kingdom and superkingdom columns
+        if 'superkingdom' in abund_table.columns:
+            abund_table = abund_table.drop(columns=['superkingdom', 'kingdom'])
+        else:
+            abund_table = abund_table.drop(columns=['kingdom'])
+        
+         # Set the phylum column as index
+        abund_table = abund_table.set_index('phylum')
     
-    # Reset index
-    abund_table = abund_table.reset_index(drop=True)
+    else:
+        # Delete extra taxonomic columns 
+        if 'Superkingdom' in abund_table.columns:
+            abund_table = abund_table.drop(columns=['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
+        else:
+            abund_table = abund_table.drop(columns=['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
+        
+         # Set the genus column as index
+        abund_table = abund_table.set_index('Genus')
     
     return abund_table
 
@@ -142,52 +154,52 @@ pie_plot_biomes.update_traces(
 
 st.plotly_chart(pie_plot_biomes, use_container_width=True)
 
-# Creat PCA plots for all studies
+# Creat PCA plots for all studies at phylum level 
 # Load the merged abundance table
-merged_df = pd.read_csv('Abundance_tables/merged_all_abund_tables.csv', index_col=0)
+merged_df_phylum = pd.read_csv('Abundance_tables/merged_all_abund_tables_phylum.csv', index_col=0)
 
 # Extract the study_id column and remove it from the DataFrame
-study_id = merged_df['study_id']
-merged_df = merged_df.drop(columns=['study_id'])
+study_id = merged_df_phylum['study_id']
+merged_df_phylum = merged_df_phylum.drop(columns=['study_id'])
 
 # Transpose the DataFrame
-merged_df_transp = merged_df.T
+merged_df_phylum_transp = merged_df_phylum.T
 
 # Create a PCA object
-pca = PCA(n_components=2)
+pca_phylum = PCA(n_components=2)
 
 # Standardize the data
-abund_values_std = StandardScaler().fit_transform(merged_df)
+abund_values_std_phylum = StandardScaler().fit_transform(merged_df_phylum)
 
 # Fit the PCA object to the standardized data
-pca.fit_transform(abund_values_std)
+pca_phylum.fit_transform(abund_values_std_phylum)
 
 # Transform the standardized data using the fitted PCA object
-pca_data = pca.transform(abund_values_std)
+pca_phylum_data = pca_phylum.transform(abund_values_std_phylum)
 
 # Create a df with the PCA data
-pca_df = pd.DataFrame(data = pca_data, columns = ['PC1', 'PC2'], index=merged_df_transp.columns)
+pca_phylum_df = pd.DataFrame(data = pca_phylum_data, columns = ['PC1', 'PC2'], index=merged_df_phylum_transp.columns)
 
 # Add study_id column
-pca_df['study_id'] = study_id
+pca_phylum_df['study_id'] = study_id
 
 # Add biome column to the PCA df 
-pca_df = pca_df.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
+pca_phylum_df = pca_phylum_df.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
 
 # Add biome in the study id column 
-pca_df['study_id'] = pca_df['study_id'].str.cat(pca_df['biomes'], sep=' - ')
+pca_phylum_df['study_id'] = pca_phylum_df['study_id'].str.cat(pca_phylum_df['biomes'], sep=' - ')
 
 # Explained variance ratio
-explained_var_ratio = pca.explained_variance_ratio_
+explained_var_ratio = pca_phylum.explained_variance_ratio_
 
-# Plot PCA colored by biome
-st.subheader("PCA plot of the analyses from all studies colored by biome")
+# Plot PCA at phylum level colored by biome
+st.subheader("PCA plot of the analyses from all studies at phylum level colored by biome")
 
-pca_biome = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8, color='biomes',
+pca_phylum_biome = px.scatter(pca_phylum_df, x='PC1', y='PC2', opacity=0.8, color='biomes',
                        hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
 
 # Add title and axis labels
-pca_biome.update_traces(
+pca_phylum_biome.update_traces(
     marker=dict(size=6)
     ).update_layout(
     xaxis=dict(
@@ -206,50 +218,50 @@ pca_biome.update_traces(
     legend=dict(font=dict(size=16))
 )
 
-st.plotly_chart(pca_biome, use_container_width=True)
+st.plotly_chart(pca_phylum_biome, use_container_width=True)
 
-# Create PCoA plots for all studies
+# Create PCoA plots for all studies at phylum level
 # Extract analyses names as numpy arrays 
-analyses_names = list(merged_df.index.values)
+analyses_names = list(merged_df_phylum.index.values)
 
 # Convert abundance table to numpy array
-abund_table_mat = merged_df.to_numpy()
+abund_table_mat_phylum = merged_df_phylum.to_numpy()
 
 # Obtain bray-curtis distance matrix
-bc_mat = beta_diversity("braycurtis", abund_table_mat, analyses_names)
+bc_mat_phylum = beta_diversity("braycurtis", abund_table_mat_phylum, analyses_names)
 
 # Replace NaN values with 0
-bc_mat = np.nan_to_num(bc_mat.data, nan=0.0)
+bc_mat_phylum = np.nan_to_num(bc_mat_phylum.data, nan=0.0)
 
 # Run PCoA
-bc_pcoa = pcoa(bc_mat)
+bc_pcoa_phylum = pcoa(bc_mat_phylum)
 
 # Extract the data to plot the PCoA
-bc_pcoa_data = pd.DataFrame(data = bc_pcoa.samples, columns = ['PC1', 'PC2'])
+bc_pcoa_phylum_data = pd.DataFrame(data = bc_pcoa_phylum.samples, columns = ['PC1', 'PC2'])
 
 # Reset index
-bc_pcoa_data = bc_pcoa_data.reset_index(drop=True)
+bc_pcoa_phylum_data = bc_pcoa_phylum_data.reset_index(drop=True)
 
 # Add analyses names as index
-bc_pcoa_data.index = merged_df_transp.columns
+bc_pcoa_phylum_data.index = merged_df_phylum_transp.columns
 
 # Add study_id column to the PCoA df
-bc_pcoa_data['study_id'] = study_id
+bc_pcoa_phylum_data['study_id'] = study_id
 
 # Add biome column to the PCoA df 
-bc_pcoa_data = bc_pcoa_data.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
+bc_pcoa_phylum_data = bc_pcoa_phylum_data.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
 
 # Add biome in the study id column 
-bc_pcoa_data['study_id'] = bc_pcoa_data['study_id'].str.cat(bc_pcoa_data['biomes'], sep=' - ')
+bc_pcoa_phylum_data['study_id'] = bc_pcoa_phylum_data['study_id'].str.cat(bc_pcoa_phylum_data['biomes'], sep=' - ')
 
 # Plot PCoA colored by biome
-st.subheader("PCoA plot (Bray Curtis distance) of the analyses from all studies colored by biome")
+st.subheader("PCoA plot (Bray Curtis distance) of the analyses from all studies at phylum level colored by biome")
 
-pcoa_biome = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, color='biomes',
+pcoa_phylum_biome = px.scatter(bc_pcoa_phylum_data, x='PC1', y='PC2', opacity=0.8, color='biomes',
                         hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
 
 # Add title and axis labels
-pcoa_biome.update_traces(
+pcoa_phylum_biome.update_traces(
     marker=dict(size=6)
     ).update_layout(
     xaxis=dict(
@@ -268,16 +280,16 @@ pcoa_biome.update_traces(
     legend=dict(font=dict(size=16))
 )
 
-st.plotly_chart(pcoa_biome, use_container_width=True)
+st.plotly_chart(pcoa_phylum_biome, use_container_width=True)
 
 # Plot PCA colored by study id and biome
-st.subheader("PCA plot of the analyses from all studies colored by study id and biome")
+st.subheader("PCA plot of the analyses from all studies at phylum level colored by study id and biome")
 
-pca_studyid_biome = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8, color='study_id', 
+pca_phylum_studyid_biome = px.scatter(pca_phylum_df, x='PC1', y='PC2', opacity=0.8, color='study_id', 
                        hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Dark24)
 
 # Add title and axis labels
-pca_studyid_biome.update_traces(
+pca_phylum_studyid_biome.update_traces(
     marker=dict(size=6)
     ).update_layout(
     xaxis=dict(
@@ -296,16 +308,16 @@ pca_studyid_biome.update_traces(
     legend=dict(font=dict(size=12))
 )
 
-st.plotly_chart(pca_studyid_biome, use_container_width=True)
+st.plotly_chart(pca_phylum_studyid_biome, use_container_width=True)
 
 # Plot PCoA colored by study id and biome
-st.subheader("PCoA plot (Bray Curtis distance) of the analyses from all studies colored by study id and biome")
+st.subheader("PCoA plot (Bray Curtis distance) of the analyses from all studies at phylum level colored by study id and biome")
 
-pcoa_studyid_biome = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, color='study_id',
+pcoa_phylum_studyid_biome = px.scatter(bc_pcoa_phylum_data, x='PC1', y='PC2', opacity=0.8, color='study_id',
                                 hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Dark24)
 
 # Add title and axis labels
-pcoa_studyid_biome.update_traces(
+pcoa_phylum_studyid_biome.update_traces(
     marker=dict(size=6)
     ).update_layout(
     xaxis=dict(
@@ -324,7 +336,191 @@ pcoa_studyid_biome.update_traces(
     legend=dict(font=dict(size=12))
 )
 
-st.plotly_chart(pcoa_studyid_biome, use_container_width=True)
+st.plotly_chart(pcoa_phylum_studyid_biome, use_container_width=True)
+
+# Create PCA plots for all studies at genus level
+# Load the merged abundance table
+merged_df_genus = pd.read_csv('Abundance_tables/merged_all_abund_tables_genus.csv', index_col=0)
+
+# Extract the study_id column and remove it from the DataFrame
+study_id = merged_df_genus['study_id']
+merged_df_genus = merged_df_genus.drop(columns=['study_id'])
+
+# Transpose the DataFrame
+merged_df_genus_transp = merged_df_genus.T
+
+# Create a PCA object
+pca_genus = PCA(n_components=2)
+
+# Standardize the data
+abund_values_std_genus = StandardScaler().fit_transform(merged_df_genus)
+
+# Fit the PCA object to the standardized data
+pca_genus.fit_transform(abund_values_std_genus)
+
+# Transform the standardized data using the fitted PCA object
+pca_genus_data = pca_genus.transform(abund_values_std_genus)
+
+# Create a df with the PCA data
+pca_genus_df = pd.DataFrame(data = pca_genus_data, columns = ['PC1', 'PC2'], index=merged_df_genus_transp.columns)
+
+# Add study_id column
+pca_genus_df['study_id'] = study_id
+
+# Add biome column to the PCA df
+pca_genus_df = pca_genus_df.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
+
+# Add biome in the study id column
+pca_genus_df['study_id'] = pca_genus_df['study_id'].str.cat(pca_genus_df['biomes'], sep=' - ')
+
+# Explained variance ratio
+explained_var_ratio = pca_genus.explained_variance_ratio_
+
+# Plot PCA at genus level colored by biome
+st.subheader("PCA plot of the analyses from all studies at genus level colored by biome")
+
+pca_genus_biome = px.scatter(pca_genus_df, x='PC1', y='PC2', opacity=0.8, color='biomes',
+                          hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
+
+# Add title and axis labels
+pca_genus_biome.update_traces(
+    marker=dict(size=6)
+    ).update_layout(
+    xaxis=dict(
+        title=f'PC1 ({explained_var_ratio[0]:.2%})',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    yaxis=dict(
+        title=f'PC2 ({explained_var_ratio[1]:.2%})',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    legend_title=dict(text='Biome', font=dict(size=20)),
+    legend=dict(font=dict(size=16))
+)
+
+st.plotly_chart(pca_genus_biome, use_container_width=True)
+
+# Create PCoA plots for all studies at genus level
+# Extract analyses names as numpy arrays
+analyses_names = list(merged_df_genus.index.values)
+
+# Convert abundance table to numpy array
+abund_table_mat_genus = merged_df_genus.to_numpy()
+
+# Obtain bray-curtis distance matrix
+bc_mat_genus = beta_diversity("braycurtis", abund_table_mat_genus, analyses_names)
+
+# Replace NaN values with 0
+bc_mat_genus = np.nan_to_num(bc_mat_genus.data, nan=0.0)
+
+# Run PCoA
+bc_pcoa_genus = pcoa(bc_mat_genus)
+
+# Extract the data to plot the PCoA
+bc_pcoa_genus_data = pd.DataFrame(data = bc_pcoa_genus.samples, columns = ['PC1', 'PC2'])
+
+# Reset index
+bc_pcoa_genus_data = bc_pcoa_genus_data.reset_index(drop=True)
+
+# Add analyses names as index
+bc_pcoa_genus_data.index = merged_df_genus_transp.columns
+
+# Add study_id column to the PCoA df
+bc_pcoa_genus_data['study_id'] = study_id
+
+# Add biome column to the PCoA df
+bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
+
+# Add biome in the study id column
+bc_pcoa_genus_data['study_id'] = bc_pcoa_genus_data['study_id'].str.cat(bc_pcoa_genus_data['biomes'], sep=' - ')
+
+# Plot PCoA colored by biome
+st.subheader("PCoA plot (Bray Curtis distance) of the analyses from all studies at genus level colored by biome")
+
+pcoa_genus_biome = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color='biomes',
+                            hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
+
+# Add title and axis labels
+pcoa_genus_biome.update_traces(
+    marker=dict(size=6)
+    ).update_layout(
+    xaxis=dict(
+        title='PC1',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    yaxis=dict(
+        title='PC2',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    legend_title=dict(text='Biome', font=dict(size=20)),
+    legend=dict(font=dict(size=16))
+)
+
+st.plotly_chart(pcoa_genus_biome, use_container_width=True)
+
+# Plot PCA colored by study id and biome
+st.subheader("PCA plot of the analyses from all studies at genus level colored by study id and biome")
+
+pca_genus_studyid_biome = px.scatter(pca_genus_df, x='PC1', y='PC2', opacity=0.8, color='study_id',
+                                    hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Dark24)
+
+# Add title and axis labels
+pca_genus_studyid_biome.update_traces(
+    marker=dict(size=6)
+    ).update_layout(
+    xaxis=dict(
+        title=f'PC1 ({explained_var_ratio[0]:.2%})',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    yaxis=dict(
+        title=f'PC2 ({explained_var_ratio[1]:.2%})',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    legend_title=dict(text='Study ID - Biome', font=dict(size=16)),
+    legend=dict(font=dict(size=12))
+)
+
+st.plotly_chart(pca_genus_studyid_biome, use_container_width=True)
+
+# Plot PCoA colored by study id and biome
+st.subheader("PCoA plot (Bray Curtis distance) of the analyses from all studies at genus level colored by study id and biome")
+
+pcoa_genus_studyid_biome = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color='study_id',
+                                    hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Dark24)
+
+# Add title and axis labels
+pcoa_genus_studyid_biome.update_traces(
+    marker=dict(size=6)
+    ).update_layout(
+    xaxis=dict(
+        title='PC1',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    yaxis=dict(
+        title='PC2',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    legend_title=dict(text='Study ID - Biome', font=dict(size=16)),
+    legend=dict(font=dict(size=12))
+)
+
+st.plotly_chart(pcoa_genus_studyid_biome, use_container_width=True)
 
 # Add info on the sidebar
 st.sidebar.header('Data')

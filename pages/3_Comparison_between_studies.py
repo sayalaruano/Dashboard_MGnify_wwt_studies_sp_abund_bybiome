@@ -7,8 +7,6 @@ import numpy as np
 import glob
 import os
 import plotly.express as px
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from skbio.diversity import beta_diversity
 from skbio.stats.ordination import pcoa
@@ -104,7 +102,7 @@ st.sidebar.write('Select a taxonomic rank in the sidebar to make the comparison 
 
 # Create a selectbox to choose the taxonomic rank
 tax_rank = st.sidebar.selectbox(
-    "Select Taxonomic Rank:",
+    "Taxonomic Rank:",
     options=["Phylum", "Genus"]
 )
 
@@ -246,104 +244,9 @@ else:
         mime='text/csv',
     )
 
-    # Create a PCA object
-    pca = PCA(n_components=2)
-
-    # Standardize the data
-    abund_values_std = StandardScaler().fit_transform(merged_df_transp)
-
-    # Fit the PCA object to the standardized data
-    pca.fit_transform(abund_values_std)
-
-    # Transform the standardized data using the fitted PCA object
-    pca_data = pca.transform(abund_values_std)
-
-    # Create a df with the PCA data
-    pca_df = pd.DataFrame(data = pca_data, columns = ['PC1', 'PC2'], index=merged_df.columns)
-
-    # Add study_id column
-    pca_df['study_id'] = study_id
-
-    # Add biome column to the PCA df 
-    pca_df = pca_df.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
-
-    # Add biome in the study id column 
-    pca_df['study_id'] = pca_df['study_id'].str.cat(pca_df['biomes'], sep=' - ')
-
-    # Explained variance ratio
-    explained_var_ratio = pca.explained_variance_ratio_
-
-    # Create a pca plot with the merged abundance table
-    st.subheader('PCA plot')
-    st.write('The PCA plot shows the distribution of the analyses from the two selected studies based on the abundance of the taxa present in both studies.')
-
-    # Create a plotly figure
-    pca_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8, color='biomes', 
-                      hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
-
-    # Add title and axis labels
-    pca_plot.update_layout(
-        xaxis=dict(
-            title=f'PC1 ({explained_var_ratio[0]:.2%})',
-            tickfont=dict(size=18),
-            titlefont=dict(size=20),
-            showgrid=False
-        ),
-        yaxis=dict(
-            title=f'PC2 ({explained_var_ratio[1]:.2%})',
-            tickfont=dict(size=18),
-            titlefont=dict(size=20),
-            showgrid=False
-        ),
-        legend_title=dict(text='Study ID - Biome', font=dict(size=20)),
-        legend=dict(font=dict(size=16))
-    )
-
-    # Show pca plot
-    st.plotly_chart(pca_plot, use_container_width=True)
-
-    # Clustering plot
-    # Run cluster analysis with k-means
-    st.subheader('Clustering analysis')
-    st.write('The clustering analysis was performed using the kmeans algorithm. The number of clusters was set to 2, based on the number of studies selected.')
-
-    # Specify the number of clusters (k)
-    k = 2
-
-    # Fit K-Means model
-    kmeans = KMeans(n_clusters=k)
-    clusters = kmeans.fit_predict(abund_values_std)
-
-    # Add the cluster labels to the PCA df
-    pca_df['Cluster'] = clusters
-
-    # Set column type to string
-    pca_df['Cluster'] = pca_df['Cluster'].astype(str)
-
-    # Create a plotly figure
-    clust_plot = px.scatter(pca_df, x='PC1', y='PC2', opacity=0.8, color='Cluster',
-                            color_discrete_sequence=px.colors.qualitative.Plotly)
-    
-    # Add title and axis labels
-    clust_plot.update_layout(
-        xaxis=dict(
-            title='PC1',
-            tickfont=dict(size=18),
-            titlefont=dict(size=20),
-            showgrid=False
-        ),
-        yaxis=dict(
-            title='PC2',
-            tickfont=dict(size=18),
-            titlefont=dict(size=20),
-            showgrid=False
-        ),
-        legend_title=dict(text='Cluster', font=dict(size=20)),
-        legend=dict(font=dict(size=16))
-    )
-
-    # Show the plot
-    st.plotly_chart(clust_plot, use_container_width=True)
+    # Create PcoA plot
+    st.subheader('PCoA plot with Bray-Curtis distance')
+    st.write('The PCoA plot shows the distribution of the analyses from the two selected studies based on the Bray-Curtis distance between them.')
     
     # Extract analyses names as numpy arrays
     analyses_names = list(merged_df_transp.index.values)
@@ -379,12 +282,8 @@ else:
     # Add biome in the study id column 
     bc_pcoa_data['study_id'] = bc_pcoa_data['study_id'].str.cat(bc_pcoa_data['biomes'], sep=' - ')
 
-    # Create PcoA plot
-    st.subheader('PCoA plot with Bray-Curtis distance')
-    st.write('The PCoA plot shows the distribution of the analyses from the two selected studies based on the Bray-Curtis distance between them.')
-
     # Create a plotly figure
-    pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, color='biomes', 
+    pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, color='study_id', 
                       hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
     
     # Add title and axis labels
@@ -407,6 +306,49 @@ else:
 
     # Show pcoa plot
     st.plotly_chart(pcoa_plot, use_container_width=True)
+
+    # Clustering plot
+    # Run cluster analysis with k-means
+    st.subheader('Clustering analysis')
+    st.write('The clustering analysis was performed using the kmeans algorithm. The number of clusters was set to 2, based on the number of studies selected.')
+
+    # Specify the number of clusters (k)
+    k = 2
+
+    # Fit K-Means model
+    kmeans = KMeans(n_clusters=k)
+    clusters = kmeans.fit_predict(abund_table_merged_mat)
+
+    # Add the cluster labels to the PCA df
+    bc_pcoa_data['Cluster'] = clusters
+
+    # Set column type to string
+    bc_pcoa_data['Cluster'] = bc_pcoa_data['Cluster'].astype(str)
+
+    # Create a plotly figure
+    clust_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, color='Cluster',
+                            color_discrete_sequence=px.colors.qualitative.Plotly)
+    
+    # Add title and axis labels
+    clust_plot.update_layout(
+        xaxis=dict(
+            title='PC1',
+            tickfont=dict(size=18),
+            titlefont=dict(size=20),
+            showgrid=False
+        ),
+        yaxis=dict(
+            title='PC2',
+            tickfont=dict(size=18),
+            titlefont=dict(size=20),
+            showgrid=False
+        ),
+        legend_title=dict(text='Cluster', font=dict(size=20)),
+        legend=dict(font=dict(size=16))
+    )
+
+    # Show the plot
+    st.plotly_chart(clust_plot, use_container_width=True)
     
 
 

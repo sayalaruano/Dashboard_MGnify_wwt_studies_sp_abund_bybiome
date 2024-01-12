@@ -5,8 +5,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 from skbio.diversity import beta_diversity
 from skbio.stats.ordination import pcoa
 from st_aggrid import AgGrid
@@ -103,10 +101,16 @@ studies_list = studies_list[~pd.isnull(studies_list)]
 # Select study
 st.sidebar.header('How it works?')
 
-st.sidebar.write('Select a study in the sidebar to display its information in the main panel.')
+st.sidebar.write('Select a study and taxonomic rank in the sidebar to display its information in the main panel.')
 
 # Create a selectbox to choose the study
 selected_study = st.sidebar.selectbox("Mgnify study:", studies_list)
+
+# Create a selectbox to choose the taxonomic rank
+tax_rank = st.sidebar.selectbox(
+    "Taxonomic Rank:",
+    options=["Phylum", "Genus"]
+)
 
 # Add aditional info
 st.sidebar.header('Data')
@@ -173,23 +177,28 @@ st.download_button(
     mime='text/csv',
 )
 
-# Load abundance table at phylum level for the selected study
-st.subheader("Abundance table at phylum level")
-abund_table_phylum = load_abund_table(selected_study, phylum=True)
-abund_table_phylum = preprocess_abund_table(abund_table_phylum, phylum=True)
+# Load and preprocess abundance table for the selected study and taxonomic rank. Store it in an independent variable
+if tax_rank == 'Phylum':
+    abund_table = load_abund_table(selected_study, phylum=True)
+    abund_table = preprocess_abund_table(abund_table, phylum=True)
+else:  # Genus
+    abund_table = load_abund_table(selected_study, phylum=False)
+    abund_table = preprocess_abund_table(abund_table, phylum=False)
 
 # Display abundance table for the selected study
-builder = GridOptionsBuilder.from_dataframe(abund_table_phylum)
+st.subheader(f"Abundance table at {tax_rank} level")
+
+builder = GridOptionsBuilder.from_dataframe(abund_table)
 builder.configure_default_column(editable=True, groupable=True)
 builder.configure_side_bar(filters_panel = True, columns_panel = True)
 builder.configure_selection(selection_mode="multiple")
 builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
 go = builder.build()
 
-AgGrid(abund_table_phylum, gridOptions=go)
+AgGrid(abund_table, gridOptions=go)
 
 # Button to download the data
-abund_table_phylum_csv = convert_df(abund_table_phylum)
+abund_table_phylum_csv = convert_df(abund_table)
 st.download_button(
     label="Download abundance data as CSV",
     data=abund_table_phylum_csv,
@@ -198,7 +207,10 @@ st.download_button(
 )
 
 # Reshape abundance df so that the assembly_run_ids become a column
-abund_df_phylum_reshaped = abund_table_phylum.melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
+if tax_rank == 'Phylum':
+    abund_df_reshaped = abund_table.melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
+else:  # Genus
+    abund_df_reshaped = abund_table.melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
 
 # Split the multiple IDs in the assembly_run_ids column of df1
 sample_info['assembly_run_ids'] = sample_info['assembly_run_ids'].str.split(';')
@@ -207,7 +219,7 @@ sample_info['assembly_run_ids'] = sample_info['assembly_run_ids'].str.split(';')
 sample_info_exploded = sample_info.explode('assembly_run_ids')
 
 # Merge dataframes on the 'assembly_run_ids' column
-samples_df = pd.merge(sample_info_exploded, abund_df_phylum_reshaped, left_on='assembly_run_ids', right_on='assembly_run_ids')
+samples_df = pd.merge(sample_info_exploded, abund_df_reshaped, left_on='assembly_run_ids', right_on='assembly_run_ids')
 
 # Filter the merged df to keep unique rows based on the assembly_run_ids column
 samples_df = samples_df.drop_duplicates(subset=['assembly_run_ids'])
@@ -223,97 +235,48 @@ samples_df['biome'] = samples_df['biome_feature'] + ' - ' + samples_df['biome_ma
 # Sort df by assembly_run_ids
 samples_df = samples_df.sort_values(by=['assembly_run_ids']).reset_index(drop=True)
 
-# Create PCA plot at phylum level
-st.subheader("PCA plot at phylum level")
-st.write('The PCA plot shows the distribution of the analyses from selected study based on the abundance of the phyla.')
-
-# Transpose abundance table
-abund_table_phylum = abund_table_phylum.set_index('phylum').T
-
-# Create a PCA object
-pca_phylum = PCA(n_components=2)
-
-# Standardize the data
-abund_values_std_phylum = StandardScaler().fit_transform(abund_table_phylum)
-
-# Fit the PCA object to the standardized data
-pca_phylum.fit_transform(abund_values_std_phylum)
-
-# Transform the standardized data using the fitted PCA object
-pca_phylum_data = pca_phylum.transform(abund_values_std_phylum)
-
-# Create a df with the PCA data
-pca_phylum_df = pd.DataFrame(data = pca_phylum_data, columns = ['PC1', 'PC2'])
-
-# Add the biome to the PCA df
-pca_phylum_df['biome'] = samples_df['biome']
-
-# Explained variance ratio
-explained_var_ratio = pca_phylum.explained_variance_ratio_
-
-# Create a plotly figure
-pca_phylum_plot = px.scatter(pca_phylum_df, x='PC1', y='PC2', opacity=0.8,
-                      color='biome', 
-                      hover_name=abund_table_phylum.index,
-                      color_discrete_sequence=px.colors.qualitative.Plotly)
-
-# Add title and axis labels
-pca_phylum_plot.update_layout(
-    xaxis=dict(
-        title=f'PC1 ({explained_var_ratio[0]:.2%})',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    yaxis=dict(
-        title=f'PC2 ({explained_var_ratio[1]:.2%})',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    legend_title=dict(text='Biome', font=dict(size=20)),
-    legend=dict(font=dict(size=16))
-)
-
-# Show pca plot at phylum level
-st.plotly_chart(pca_phylum_plot, use_container_width=True)
-
-# Create PcoA plot at phylum level
-st.subheader('PCoA plot at phylum level with Bray-Curtis distance')
+# Create PcoA plot at taxonomic rank level
+st.subheader(f'PCoA plot at {tax_rank} level with Bray-Curtis distance')
 st.write('The PCoA plot shows the distribution of the analyses from the selected study based on the Bray-Curtis distance between them.')
 
+# Transpose abundance table
+if tax_rank == 'Phylum':
+    abund_table = abund_table.set_index('phylum').T
+else:  # Genus
+    abund_table = abund_table.set_index('Genus').T
+
 # Extract analyses names as numpy arrays
-analyses_names = list(abund_table_phylum.index.values)
+analyses_names = list(abund_table.index.values)
 
 # Convert abundance table to numpy array
-abund_table_phylum_mat = abund_table_phylum.to_numpy()
+abund_table_mat = abund_table.to_numpy()
 
 # Obtain bray-curtis distance matrix
-bc_mat_phylum = beta_diversity("braycurtis", abund_table_phylum_mat, analyses_names)
+bc_mat = beta_diversity("braycurtis", abund_table_mat, analyses_names)
 
 # Replace NaN values with 0
-bc_mat_phylum = np.nan_to_num(bc_mat_phylum.data, nan=0.0)
+bc_mat = np.nan_to_num(bc_mat.data, nan=0.0)
 
 # Run PCoA
-bc_pcoa_phylum = pcoa(bc_mat_phylum)
+bc_pcoa = pcoa(bc_mat)
 
 # Extract the data to plot the PcoA
-bc_pcoa_phylum_data = pd.DataFrame(data = bc_pcoa_phylum.samples[['PC1', 'PC2']])
+bc_pcoa_data = pd.DataFrame(data = bc_pcoa.samples[['PC1', 'PC2']])
 
 # Reset index
-bc_pcoa_phylum_data = bc_pcoa_phylum_data.reset_index(drop=True)
+bc_pcoa_data = bc_pcoa_data.reset_index(drop=True)
 
 # Add the biome to the PcoA df
-bc_pcoa_phylum_data['biome'] = samples_df['biome']
+bc_pcoa_data['biome'] = samples_df['biome']
 
 # Create a plotly figure
-pcoa_phylum_plot = px.scatter(bc_pcoa_phylum_data, x='PC1', y='PC2', 
+pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', 
                        opacity=0.8, color='biome', 
-                       hover_name=abund_table_phylum.index,
+                       hover_name=abund_table.index,
                        color_discrete_sequence=px.colors.qualitative.Plotly)
 
 # Add title and axis labels
-pcoa_phylum_plot.update_layout(
+pcoa_plot.update_layout(
     xaxis=dict(
         title='PC1',
         tickfont=dict(size=18),
@@ -330,141 +293,8 @@ pcoa_phylum_plot.update_layout(
     legend=dict(font=dict(size=16))
 )
 
-# Show pcoa plot at phylum level
-st.plotly_chart(pcoa_phylum_plot, use_container_width=True)
+# Show pcoa plot at the chosen taxonomic rank level
+st.plotly_chart(pcoa_plot, use_container_width=True)
 
-# Load abundance table at genus level for the selected study
-st.subheader("Abundance table at genus level")
-abund_table_genus = load_abund_table(selected_study, phylum=False)
-abund_table_genus = preprocess_abund_table(abund_table_genus, phylum=False)
-
-# Display abundance table for the selected study
-builder = GridOptionsBuilder.from_dataframe(abund_table_genus)
-builder.configure_default_column(editable=True, groupable=True)
-builder.configure_side_bar(filters_panel = True, columns_panel = True)
-builder.configure_selection(selection_mode="multiple")
-builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
-go = builder.build()
-
-AgGrid(abund_table_genus, gridOptions=go)
-
-# Button to download the data
-abund_table_genus_csv = convert_df(abund_table_genus)
-st.download_button(
-    label="Download abundance data as CSV",
-    data=abund_table_genus_csv,
-    file_name=f'abund_table_genus_{selected_study}.csv',
-    mime='text/csv',
-)
-
-# PCA plot at genus level
-st.subheader("PCA plot at genus level")
-st.write('The PCA plot shows the distribution of the analyses from selected study based on the abundance of the genera.')
-
-# Transpose abundance table
-abund_table_genus = abund_table_genus.set_index('Genus').T
-
-# Create a PCA object
-pca_genus = PCA(n_components=2)
-
-# Standardize the data
-abund_values_std_genus = StandardScaler().fit_transform(abund_table_genus)
-
-# Fit the PCA object to the standardized data
-pca_genus.fit_transform(abund_values_std_genus)
-
-# Transform the standardized data using the fitted PCA object
-pca_genus_data = pca_genus.transform(abund_values_std_genus)
-
-# Create a df with the PCA data
-pca_genus_df = pd.DataFrame(data = pca_genus_data, columns = ['PC1', 'PC2'])
-
-# Add the biome to the PCA df
-pca_genus_df['biome'] = samples_df['biome']
-
-# Explained variance ratio
-explained_var_ratio = pca_genus.explained_variance_ratio_
-
-# Create a plotly figure
-pca_genus_plot = px.scatter(pca_genus_df, x='PC1', y='PC2', opacity=0.8,
-                            color='biome', 
-                            hover_name=abund_table_genus.index,
-                            color_discrete_sequence=px.colors.qualitative.Plotly)
-
-# Add title and axis labels
-pca_genus_plot.update_layout(
-    xaxis=dict(
-        title=f'PC1 ({explained_var_ratio[0]:.2%})',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    yaxis=dict(
-        title=f'PC2 ({explained_var_ratio[1]:.2%})',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    legend_title=dict(text='Biome', font=dict(size=20)),
-    legend=dict(font=dict(size=16))
-)
-
-# Show pca plot at genus level
-st.plotly_chart(pca_genus_plot, use_container_width=True)
-
-# Create PcoA plot at genus level
-st.subheader('PCoA plot at genus level with Bray-Curtis distance')
-st.write('The PCoA plot shows the distribution of the analyses from the selected study based on the Bray-Curtis distance between them.')
-
-# Extract analyses names as numpy arrays
-analyses_names = list(abund_table_genus.index.values)
-
-# Convert abundance table to numpy array
-abund_table_genus_mat = abund_table_genus.to_numpy()
-
-# Obtain bray-curtis distance matrix
-bc_mat_genus = beta_diversity("braycurtis", abund_table_genus_mat, analyses_names)
-
-# Replace NaN values with 0
-bc_mat_genus = np.nan_to_num(bc_mat_genus.data, nan=0.0)
-
-# Run PCoA
-bc_pcoa_genus = pcoa(bc_mat_genus)
-
-# Extract the data to plot the PcoA
-bc_pcoa_genus_data = pd.DataFrame(data = bc_pcoa_genus.samples[['PC1', 'PC2']])
-
-# Reset index
-bc_pcoa_genus_data = bc_pcoa_genus_data.reset_index(drop=True)
-
-# Add the biome to the PcoA df
-bc_pcoa_genus_data['biome'] = samples_df['biome']
-
-# Create a plotly figure
-pcoa_genus_plot = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2',
-                            opacity=0.8, color='biome',
-                            hover_name=abund_table_genus.index,
-                            color_discrete_sequence=px.colors.qualitative.Plotly)
-
-# Add title and axis labels
-pcoa_genus_plot.update_layout(
-    xaxis=dict(
-        title='PC1',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    yaxis=dict(
-        title='PC2',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    legend_title=dict(text='Biome', font=dict(size=20)),
-    legend=dict(font=dict(size=16))
-)
-
-# Show pcoa plot at genus level
-st.plotly_chart(pcoa_genus_plot, use_container_width=True)
 
 

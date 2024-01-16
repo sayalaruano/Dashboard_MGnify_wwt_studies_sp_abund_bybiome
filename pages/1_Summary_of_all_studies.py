@@ -1,10 +1,13 @@
 # Web app
 import streamlit as st
+from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
 import plotly.express as px
 import pandas as pd
 import numpy as np
 from skbio.diversity import beta_diversity
-from skbio.stats.ordination import pcoa
+from skbio.stats.ordination import pcoa, pcoa_biplot
+from scipy.spatial.distance import squareform
 
 # OS and file management
 from PIL import Image
@@ -78,6 +81,11 @@ def preprocess_abund_table(abund_table, phylum):
         abund_table = abund_table.set_index('Genus')
     
     return abund_table
+
+# Function to download the data
+@st.cache_data
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
 
 # Add a title and info about the app
 st.title('Summary and EDA of waste water treatment studies from Mgnify')
@@ -193,64 +201,192 @@ bc_pcoa_genus_data['study_id'] = study_id
 # Add biome column to the PCoA df
 bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
 
+# Add country column to the PCoA df
+bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'sampling_country']], on='study_id')
+
+# Add type of data column to the PCoA df
+bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'experiment_type']], on='study_id')
+
 # Add biome in the study id column
 bc_pcoa_genus_data['study_id'] = bc_pcoa_genus_data['study_id'].str.cat(bc_pcoa_genus_data['biomes'], sep=' - ')
 
-# Plot PCoA colored by biome
-st.subheader("PCoA plot (Bray Curtis distance) of the analyses from all studies at genus level colored by biome")
+# Get explained variance ratio
+explained_var_ratio = bc_pcoa_genus.proportion_explained
 
-pcoa_genus_biome = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color='biomes',
-                            hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
+# Reset index of merged_df_genus
+# merged_df_genus_biplot = merged_df_genus.reset_index()
+# merged_df_genus_biplot = merged_df_genus_biplot.drop(columns=['index'])
+# bc_pcoa_genus.samples = bc_pcoa_genus.samples.reset_index()
+# bc_pcoa_genus.samples = bc_pcoa_genus.samples.drop(columns=['index'])
 
-# Add title and axis labels
-pcoa_genus_biome.update_traces(
-    marker=dict(size=6)
-    ).update_layout(
+# Extract sample names from PCoA results
+# abund_table_aligned1 = merged_df_genus_transp.loc[bc_pcoa_genus.samples.index]
+# abund_table_aligned2 = merged_df_genus.loc[bc_pcoa_genus.samples.index]
+
+# Compute the projection of descriptors into a PCoA matrix
+# bc_pcoa_biplot = pcoa_biplot(bc_pcoa_genus, merged_df_genus_biplot)
+
+# Extract biplot scores for features
+# biplot_scores = bc_pcoa_biplot.features
+
+# Create a boxplot to show the distribution of the distances within and between the studies
+st.subheader(f'Distribution of the Bray-Curtis distances at Genus level')
+# Initialize an empty DataFrame to store distances and corresponding study IDs
+distances_df = pd.DataFrame()
+
+# Loop over each unique study ID
+for study in np.unique(study_id):
+    # Get the indices of samples belonging to this study
+    indices = np.where(study_id == study)[0]
+
+    # Extract the submatrix of distances for these samples
+    submatrix = bc_mat_genus[np.ix_(indices, indices)]
+
+    # Convert the submatrix to a 1D array of distances
+    dist_within = squareform(submatrix)
+
+    # Filter out zero distances (self-comparisons)
+    dist_within = dist_within[dist_within != 0]
+
+    # Add these distances to the DataFrame
+    temp_df = pd.DataFrame({'Distance': dist_within, 'Study': study})
+    distances_df = pd.concat([distances_df, temp_df], ignore_index=True)
+
+# Create the violin plot for each study
+violin_plot_genus = px.violin(distances_df, y='Distance', x='Study', box=True,
+                color='Study', color_discrete_sequence=px.colors.qualitative.Dark24)
+
+# Rotate x-axis labels to display them vertically
+violin_plot_genus.update_layout(
     xaxis=dict(
-        title='PC1',
         tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
+        titlefont=dict(size=20)
     ),
     yaxis=dict(
-        title='PC2',
+        title='Bray-Curtis distance',
         tickfont=dict(size=18),
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title=dict(text='Biome', font=dict(size=20)),
+    legend_title=dict(text='Study', font=dict(size=20)),
     legend=dict(font=dict(size=16))
 )
 
-st.plotly_chart(pcoa_genus_biome, use_container_width=True)
+st.plotly_chart(violin_plot_genus, use_container_width=True)
 
-# Plot PCoA colored by study id and biome
-st.subheader("PCoA plot (Bray Curtis distance) of the analyses from all studies at genus level colored by study id and biome")
+# Create a boxplot to show the distribution of the distances within and between the studies
+st.subheader(f'Top 5 genera per study')
+# Add study_id back to merged_df_genus
+merged_df_genus['study_id'] = study_id
 
-pcoa_genus_studyid_biome = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color='study_id',
-                                    hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Dark24)
+# Initialize an empty DataFrame for the top 5 genera data
+top_genera_df = pd.DataFrame()
+
+# Loop over each study to find the top 5 genera
+for study in merged_df_genus['study_id'].unique():
+    study_data = merged_df_genus[merged_df_genus['study_id'] == study]
+    top_genera = study_data.drop(columns='study_id').sum().nlargest(5)
+    total_abundance = top_genera.sum()
+    
+    # Normalize the abundance for relative comparison
+    top_genera_relative = (top_genera / total_abundance) * 100
+
+    temp_df = pd.DataFrame({
+        'Study': study,
+        'Genus': top_genera_relative.index,
+        'Relative Abundance': top_genera_relative.values
+    })
+    top_genera_df = pd.concat([top_genera_df, temp_df])
+
+# Display the top genera data
+builder = GridOptionsBuilder.from_dataframe(top_genera_df)
+builder.configure_default_column(editable=True, groupable=True)
+builder.configure_side_bar(filters_panel = True, columns_panel = True)
+builder.configure_selection(selection_mode="multiple")
+builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
+go = builder.build()
+
+AgGrid(top_genera_df, gridOptions=go)
+
+# Button to download the data
+top_genera_csv = convert_df(top_genera_df)
+st.download_button(
+    label="Download top5 genera for all studies data as CSV",
+    data=top_genera_csv,
+    file_name=f'top5_genera_data_allstudies.csv',
+    mime='text/csv',
+)
+
+# Create a stacked bar chart
+top_genera_plot = px.scatter(top_genera_df, x='Study', y='Relative Abundance', color='Genus',
+             category_orders={"Genus": top_genera_df['Genus'].unique()}, opacity=0.8,
+             color_discrete_sequence=px.colors.qualitative.Dark24)
 
 # Add title and axis labels
-pcoa_genus_studyid_biome.update_traces(
+top_genera_plot.update_traces(
     marker=dict(size=6)
     ).update_layout(
     xaxis=dict(
-        title='PC1',
+        title='Study',
         tickfont=dict(size=18),
         titlefont=dict(size=20),
         showgrid=False
     ),
     yaxis=dict(
-        title='PC2',
+        title='Relative abundance (%)',
         tickfont=dict(size=18),
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title=dict(text='Study ID - Biome', font=dict(size=16)),
-    legend=dict(font=dict(size=12))
+    legend_title=dict(text='Genus', font=dict(size=20)),
+    legend=dict(font=dict(size=16))
 )
 
-st.plotly_chart(pcoa_genus_studyid_biome, use_container_width=True)
+# Show the plot
+st.plotly_chart(top_genera_plot, use_container_width=True)
+
+# Plot PCoA colored by biome
+st.subheader(f"PCoA plot (Bray Curtis distance) of the analyses from all studies at Genus level")
+
+# Dropdown menu for selecting the color variable
+color_option = st.selectbox("Select a variable to color by:", 
+                            ('Biomes', 'Study ID and Biome', 'Sampling country', 'Data type'))
+
+# Create a function to update the figure
+def update_figure(selected_variable):
+    if selected_variable == 'Biomes':
+        return 'biomes'
+    elif selected_variable == 'Study ID and Biome':
+        return 'study_id'
+    elif selected_variable == 'Sampling country':
+        return 'sampling_country'
+    elif selected_variable == 'Data type':
+        return 'experiment_type'
+
+pcoa_genus = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color=update_figure(color_option),
+                            hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Dark24)
+
+# Add title and axis labels
+pcoa_genus.update_traces(
+    marker=dict(size=6)
+    ).update_layout(
+    xaxis=dict(
+        title=f'PCo1 ({explained_var_ratio[0]:.2%})',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    yaxis=dict(
+        title=f'PCo2 ({explained_var_ratio[1]:.2%})',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    legend_title=dict(text=color_option, font=dict(size=20)),
+    legend=dict(font=dict(size=16))
+)
+
+st.plotly_chart(pcoa_genus, use_container_width=True)
 
 # Add info on the sidebar
 st.sidebar.header('Data')
@@ -261,6 +397,3 @@ st.sidebar.write('The code for this project is available under the [MIT License]
 
 st.sidebar.header('Contact')
 st.sidebar.write('If you have any comments or suggestions about this work, please [create an issue](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies/issues/new) in the GitHub repository of this project.')
-    
-
-

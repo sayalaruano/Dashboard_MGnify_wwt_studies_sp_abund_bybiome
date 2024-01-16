@@ -289,13 +289,13 @@ else:
     # Add title and axis labels
     pcoa_plot.update_layout(
         xaxis=dict(
-            title='PC1',
+            title='PCo1',
             tickfont=dict(size=18),
             titlefont=dict(size=20),
             showgrid=False
         ),
         yaxis=dict(
-            title='PC2',
+            title='PCo2',
             tickfont=dict(size=18),
             titlefont=dict(size=20),
             showgrid=False

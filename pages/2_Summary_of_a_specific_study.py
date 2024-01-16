@@ -9,7 +9,7 @@ from skbio.diversity import beta_diversity
 from skbio.stats.ordination import pcoa
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
-
+from scipy.spatial.distance import squareform
 
 # OS and file management
 from PIL import Image
@@ -278,13 +278,13 @@ pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2',
 # Add title and axis labels
 pcoa_plot.update_layout(
     xaxis=dict(
-        title='PC1',
+        title='PCo1',
         tickfont=dict(size=18),
         titlefont=dict(size=20),
         showgrid=False
     ),
     yaxis=dict(
-        title='PC2',
+        title='PCo2',
         tickfont=dict(size=18),
         titlefont=dict(size=20),
         showgrid=False
@@ -295,6 +295,91 @@ pcoa_plot.update_layout(
 
 # Show pcoa plot at the chosen taxonomic rank level
 st.plotly_chart(pcoa_plot, use_container_width=True)
+
+# Create a boxplot to show the distribution of the distances within the study
+st.subheader(f'Distribution of the Bray-Curtis distances at {tax_rank} level')
+
+# Assuming bc_mat is the Bray-Curtis distance matrix you have
+# Convert the distance matrix to a 1D array of distances
+dist_within = squareform(bc_mat)
+
+# Filter out zero distances (self-comparisons)
+dist_within = dist_within[dist_within != 0]
+
+# Prepare data for violin plot
+data = {'Distance': dist_within}
+df_violin_plot = pd.DataFrame(data)
+
+# Create the violin plot
+violin_plot = px.violin(df_violin_plot, y='Distance', box=True, color_discrete_sequence=px.colors.qualitative.Plotly)
+
+# Add title and axis labels
+violin_plot.update_layout(
+    yaxis=dict(
+        title='Bray-Curtis Distance',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    legend_title=dict(text='Distance', font=dict(size=20)),
+    legend=dict(font=dict(size=16))
+)
+
+# Show violin plot at the chosen taxonomic rank level
+st.plotly_chart(violin_plot, use_container_width=True)
+
+# Create a datframe with the top 10 most abundant taxa
+# Reset the index of the DataFrame, this will add the index as a new column
+abund_table_reset = abund_table.T.reset_index()
+
+# Remove the first row (which is the index)
+abund_table_reset = abund_table_reset.drop(abund_table_reset.index[0])
+
+if tax_rank == 'Phylum':
+    # Now use the taxa column as id_vars in melt
+    abund_table_top10 = abund_table_reset.melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
+    # Rename the column
+    abund_table_top10 = abund_table_top10.rename(columns={'phylum': 'taxa'})
+else:  # Genus
+    abund_table_top10 = abund_table_reset.melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
+    abund_table_top10 = abund_table_top10.rename(columns={'Genus': 'taxa'})
+
+# Group by taxonomic rank and sum the counts
+abund_table_top10 = abund_table_top10.groupby('taxa').sum().reset_index()
+
+# Sort values by count
+abund_table_top10 = abund_table_top10.sort_values(by='count', ascending=False).reset_index(drop=True)
+
+# Keep only the top 10 most abundant taxa
+abund_table_top10 = abund_table_top10.head(10)
+
+# Create a bar plot to show the top 10 most abundant taxa
+st.subheader(f'Top 10 most abundant taxa at {tax_rank} level')
+
+# Create a plotly figure
+top10_plot = px.bar(abund_table_top10, x="taxa", y='count', color_discrete_sequence=px.colors.qualitative.Plotly)
+
+# Add title and axis labels
+top10_plot.update_layout(
+    xaxis=dict(
+        title=f'{tax_rank}',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    yaxis=dict(
+        title='Count',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    legend_title=dict(text='Count', font=dict(size=20)),
+    legend=dict(font=dict(size=16))
+)
+
+# Show top 10 most abundant taxa plot at the chosen taxonomic rank level
+st.plotly_chart(top10_plot, use_container_width=True)
+
 
 
 

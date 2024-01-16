@@ -3,10 +3,11 @@ import streamlit as st
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import plotly.express as px
+# import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 from skbio.diversity import beta_diversity
-from skbio.stats.ordination import pcoa, pcoa_biplot
+from skbio.stats.ordination import pcoa
 from scipy.spatial.distance import squareform
 
 # OS and file management
@@ -213,22 +214,6 @@ bc_pcoa_genus_data['study_id'] = bc_pcoa_genus_data['study_id'].str.cat(bc_pcoa_
 # Get explained variance ratio
 explained_var_ratio = bc_pcoa_genus.proportion_explained
 
-# Reset index of merged_df_genus
-# merged_df_genus_biplot = merged_df_genus.reset_index()
-# merged_df_genus_biplot = merged_df_genus_biplot.drop(columns=['index'])
-# bc_pcoa_genus.samples = bc_pcoa_genus.samples.reset_index()
-# bc_pcoa_genus.samples = bc_pcoa_genus.samples.drop(columns=['index'])
-
-# Extract sample names from PCoA results
-# abund_table_aligned1 = merged_df_genus_transp.loc[bc_pcoa_genus.samples.index]
-# abund_table_aligned2 = merged_df_genus.loc[bc_pcoa_genus.samples.index]
-
-# Compute the projection of descriptors into a PCoA matrix
-# bc_pcoa_biplot = pcoa_biplot(bc_pcoa_genus, merged_df_genus_biplot)
-
-# Extract biplot scores for features
-# biplot_scores = bc_pcoa_biplot.features
-
 # Create a boxplot to show the distribution of the distances within and between the studies
 st.subheader(f'Distribution of the Bray-Curtis distances at Genus level')
 # Initialize an empty DataFrame to store distances and corresponding study IDs
@@ -298,25 +283,6 @@ for study in merged_df_genus['study_id'].unique():
     })
     top_genera_df = pd.concat([top_genera_df, temp_df])
 
-# Display the top genera data
-builder = GridOptionsBuilder.from_dataframe(top_genera_df)
-builder.configure_default_column(editable=True, groupable=True)
-builder.configure_side_bar(filters_panel = True, columns_panel = True)
-builder.configure_selection(selection_mode="multiple")
-builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
-go = builder.build()
-
-AgGrid(top_genera_df, gridOptions=go)
-
-# Button to download the data
-top_genera_csv = convert_df(top_genera_df)
-st.download_button(
-    label="Download top5 genera for all studies data as CSV",
-    data=top_genera_csv,
-    file_name=f'top5_genera_data_allstudies.csv',
-    mime='text/csv',
-)
-
 # Create a stacked bar chart
 top_genera_plot = px.scatter(top_genera_df, x='Study', y='Relative Abundance', color='Genus',
              category_orders={"Genus": top_genera_df['Genus'].unique()}, opacity=0.8,
@@ -344,6 +310,25 @@ top_genera_plot.update_traces(
 
 # Show the plot
 st.plotly_chart(top_genera_plot, use_container_width=True)
+
+# Display the top genera data
+builder = GridOptionsBuilder.from_dataframe(top_genera_df)
+builder.configure_default_column(editable=True, groupable=True)
+builder.configure_side_bar(filters_panel = True, columns_panel = True)
+builder.configure_selection(selection_mode="multiple")
+builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
+grid_opt = builder.build()
+
+AgGrid(top_genera_df, gridOptions=grid_opt)
+
+# Button to download the data
+top_genera_csv = convert_df(top_genera_df)
+st.download_button(
+    label="Download top5 genera for all studies data as CSV",
+    data=top_genera_csv,
+    file_name=f'top5_genera_data_allstudies.csv',
+    mime='text/csv',
+)
 
 # Plot PCoA colored by biome
 st.subheader(f"PCoA plot (Bray Curtis distance) of the analyses from all studies at Genus level")
@@ -386,6 +371,7 @@ pcoa_genus.update_traces(
     legend=dict(font=dict(size=16))
 )
 
+# Show the plot
 st.plotly_chart(pcoa_genus, use_container_width=True)
 
 # Add info on the sidebar

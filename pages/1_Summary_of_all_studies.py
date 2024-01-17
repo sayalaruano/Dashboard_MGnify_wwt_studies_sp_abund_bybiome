@@ -3,7 +3,7 @@ import streamlit as st
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import plotly.express as px
-# import plotly.graph_objects as go
+import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 from skbio.diversity import beta_diversity
@@ -120,8 +120,8 @@ pie_plot_countries.update_traces(
     textinfo='value',
     insidetextfont=dict(size=18)
     ).update_layout(
-        legend_title=dict(text='Country', font=dict(size=19)),
-        legend=dict(font=dict(size=17))
+        legend_title=dict(text='Country', font=dict(size=24)),
+        legend=dict(font=dict(size=20))
     )
 
 st.plotly_chart(pie_plot_countries, use_container_width=True)
@@ -155,8 +155,8 @@ pie_plot_biomes.update_traces(
     textinfo='value',
     insidetextfont=dict(size=18)
     ).update_layout(
-        legend_title=dict(text='Biome', font=dict(size=18)),
-        legend=dict(font=dict(size=16))
+        legend_title=dict(text='Biome', font=dict(size=24)),
+        legend=dict(font=dict(size=20))
     )
 
 st.plotly_chart(pie_plot_biomes, use_container_width=True)
@@ -253,8 +253,8 @@ violin_plot_genus.update_layout(
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title=dict(text='Study', font=dict(size=20)),
-    legend=dict(font=dict(size=16))
+    legend_title=dict(text='Study', font=dict(size=24)),
+    legend=dict(font=dict(size=20))
 )
 
 st.plotly_chart(violin_plot_genus, use_container_width=True)
@@ -284,14 +284,19 @@ for study in merged_df_genus['study_id'].unique():
     top_genera_df = pd.concat([top_genera_df, temp_df])
 
 # Create a stacked bar chart
-top_genera_plot = px.scatter(top_genera_df, x='Study', y='Relative Abundance', color='Genus',
+top_genera_plot = px.scatter(top_genera_df, x='Study', y='Relative Abundance', text='Genus', color = 'Study',
              category_orders={"Genus": top_genera_df['Genus'].unique()}, opacity=0.8,
              color_discrete_sequence=px.colors.qualitative.Dark24)
 
-# Add title and axis labels
-top_genera_plot.update_traces(
-    marker=dict(size=6)
-    ).update_layout(
+# Adjust text label size and position
+for trace in top_genera_plot.data:
+    trace.textposition = 'middle center'
+    trace.marker.size = 7
+    trace.textfont = dict(size=16)  # Increase the text size
+
+# Update layout to adjust the margin, if necessary, to ensure text is not cut off
+top_genera_plot.update_layout(
+    margin=dict(l=40, r=40, t=40, b=40),
     xaxis=dict(
         title='Study',
         tickfont=dict(size=18),
@@ -304,8 +309,7 @@ top_genera_plot.update_traces(
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title=dict(text='Genus', font=dict(size=20)),
-    legend=dict(font=dict(size=16))
+    showlegend=False
 )
 
 # Show the plot
@@ -353,7 +357,7 @@ pcoa_genus = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color
 
 # Add title and axis labels
 pcoa_genus.update_traces(
-    marker=dict(size=6)
+    marker=dict(size=7)
     ).update_layout(
     xaxis=dict(
         title=f'PCo1 ({explained_var_ratio[0]:.2%})',
@@ -367,8 +371,8 @@ pcoa_genus.update_traces(
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title=dict(text=color_option, font=dict(size=20)),
-    legend=dict(font=dict(size=16))
+    legend_title=dict(text=color_option, font=dict(size=24)),
+    legend=dict(font=dict(size=20))
 )
 
 # Show the plot

@@ -282,26 +282,31 @@ else:
     # Add biome in the study id column 
     bc_pcoa_data['study_id'] = bc_pcoa_data['study_id'].str.cat(bc_pcoa_data['biomes'], sep=' - ')
 
+    # Get explained variance ratio
+    explained_var_ratio = bc_pcoa.proportion_explained
+
     # Create a plotly figure
     pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', opacity=0.8, color='study_id', 
                       hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Plotly)
-    
+
     # Add title and axis labels
-    pcoa_plot.update_layout(
+    pcoa_plot.update_traces(
+        marker=dict(size=7)
+        ).update_layout(
         xaxis=dict(
-            title='PCo1',
+            title=f'PCo1 ({explained_var_ratio[0]:.2%})',
             tickfont=dict(size=18),
             titlefont=dict(size=20),
             showgrid=False
         ),
         yaxis=dict(
-            title='PCo2',
+            title=f'PCo2 ({explained_var_ratio[1]:.2%})',
             tickfont=dict(size=18),
             titlefont=dict(size=20),
             showgrid=False
         ),
-        legend_title=dict(text='Study ID - Biome', font=dict(size=20)),
-        legend=dict(font=dict(size=16))
+        legend_title=dict(text='Study ID - Biome', font=dict(size=24)),
+        legend=dict(font=dict(size=20))
     )
 
     # Show pcoa plot
@@ -343,8 +348,8 @@ else:
             titlefont=dict(size=20),
             showgrid=False
         ),
-        legend_title=dict(text='Cluster', font=dict(size=20)),
-        legend=dict(font=dict(size=16))
+        legend_title=dict(text='Cluster', font=dict(size=24)),
+        legend=dict(font=dict(size=20))
     )
 
     # Show the plot

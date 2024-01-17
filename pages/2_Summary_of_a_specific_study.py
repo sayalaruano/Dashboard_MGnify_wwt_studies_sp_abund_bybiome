@@ -198,11 +198,11 @@ go = builder.build()
 AgGrid(abund_table, gridOptions=go)
 
 # Button to download the data
-abund_table_phylum_csv = convert_df(abund_table)
+abund_table_csv = convert_df(abund_table)
 st.download_button(
     label="Download abundance data as CSV",
-    data=abund_table_phylum_csv,
-    file_name=f'abund_table_phylum_{selected_study}.csv',
+    data=abund_table_csv,
+    file_name=f'abund_table_{tax_rank}_{selected_study}.csv',
     mime='text/csv',
 )
 
@@ -269,6 +269,9 @@ bc_pcoa_data = bc_pcoa_data.reset_index(drop=True)
 # Add the biome to the PcoA df
 bc_pcoa_data['biome'] = samples_df['biome']
 
+# Get explained variance ratio
+explained_var_ratio = bc_pcoa.proportion_explained
+
 # Create a plotly figure
 pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', 
                        opacity=0.8, color='biome', 
@@ -276,21 +279,23 @@ pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2',
                        color_discrete_sequence=px.colors.qualitative.Plotly)
 
 # Add title and axis labels
-pcoa_plot.update_layout(
+pcoa_plot.update_traces(
+    marker=dict(size=7)
+    ).update_layout(
     xaxis=dict(
-        title='PCo1',
+        title=f'PCo1 ({explained_var_ratio[0]:.2%})',
         tickfont=dict(size=18),
         titlefont=dict(size=20),
         showgrid=False
     ),
     yaxis=dict(
-        title='PCo2',
+        title=f'PCo2 ({explained_var_ratio[1]:.2%})',
         tickfont=dict(size=18),
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title=dict(text='Biome', font=dict(size=20)),
-    legend=dict(font=dict(size=16))
+    legend_title=dict(text="Biome", font=dict(size=24)),
+    legend=dict(font=dict(size=20))
 )
 
 # Show pcoa plot at the chosen taxonomic rank level
@@ -321,8 +326,8 @@ violin_plot.update_layout(
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title=dict(text='Distance', font=dict(size=20)),
-    legend=dict(font=dict(size=16))
+    legend_title=dict(text='Distance', font=dict(size=24)),
+    legend=dict(font=dict(size=20))
 )
 
 # Show violin plot at the chosen taxonomic rank level
@@ -373,8 +378,8 @@ top10_plot.update_layout(
         titlefont=dict(size=20),
         showgrid=False
     ),
-    legend_title=dict(text='Count', font=dict(size=20)),
-    legend=dict(font=dict(size=16))
+    legend_title=dict(text='Count', font=dict(size=24)),
+    legend=dict(font=dict(size=20))
 )
 
 # Show top 10 most abundant taxa plot at the chosen taxonomic rank level

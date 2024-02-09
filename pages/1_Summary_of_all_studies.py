@@ -4,6 +4,8 @@ from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import plotly.express as px
 import plotly.graph_objects as go
+import seaborn as sns
+import colorcet as cc
 import pandas as pd
 import numpy as np
 from skbio.diversity import beta_diversity
@@ -59,7 +61,7 @@ def load_abund_table(selected_study, phylum):
 
 # Function to preprocess abundance table for a specific study
 def preprocess_abund_table(abund_table, phylum):
-    # Delete NaN rows
+    # Delete rows with NANs in all columns
     abund_table = abund_table.dropna(how='all')
     if phylum:
         # Delete kingdom and superkingdom columns
@@ -67,20 +69,21 @@ def preprocess_abund_table(abund_table, phylum):
             abund_table = abund_table.drop(columns=['superkingdom', 'kingdom'])
         else:
             abund_table = abund_table.drop(columns=['kingdom'])
-        
-         # Set the phylum column as index
+    
+        # Set the phylum column as index
         abund_table = abund_table.set_index('phylum')
     
     else:
-        # Delete extra taxonomic columns 
-        if 'Superkingdom' in abund_table.columns:
-            abund_table = abund_table.drop(columns=['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
-        else:
-            abund_table = abund_table.drop(columns=['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
+        # Delete extra taxonomic columns
+        # Check available taxonomic levels and drop the corresponding columns
+        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species']
+        for level in taxonomic_levels:
+            if level in abund_table.columns:
+                abund_table = abund_table.drop(columns=level)
         
-         # Set the genus column as index
+        # Set the genus column as index
         abund_table = abund_table.set_index('Genus')
-    
+
     return abund_table
 
 # Function to download the data
@@ -89,17 +92,17 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 # Add a title and info about the app
-st.title('Summary and EDA of waste water treatment studies from Mgnify')
+st.title('Summary and EDA of waste water treatment studies from Mgnify combined by biomes')
 st.header('Plots to summarize all studies')
 
 # Create plot the number of studies per study
 st.subheader("Number of samples per study")
 
 hist_samples = px.histogram(st.session_state.studies_data, x="n_samples", 
-                            nbins=25, opacity=0.8, color_discrete_sequence=px.colors.qualitative.Plotly)
+                            nbins=40, opacity=0.8, color_discrete_sequence=px.colors.qualitative.Plotly)
 
 hist_samples.update_layout(
-    xaxis=dict(title='Number of samples', tickfont=dict(size=18), titlefont=dict(size=20)),
+    xaxis=dict(title='Number of samples', tickfont=dict(size=18), titlefont=dict(size=20), dtick=10, tick0=0),
     yaxis=dict(title='Number of studies', tickfont=dict(size=18), titlefont=dict(size=20))
     ).update_xaxes(
         showgrid=False
@@ -161,9 +164,20 @@ pie_plot_biomes.update_traces(
 
 st.plotly_chart(pie_plot_biomes, use_container_width=True)
 
+# Get the unique biomes removeing nan values
+biomes = st.session_state.studies_data["biomes"].unique()
+biomes = [b for b in biomes if str(b) != 'nan']
+
+# Selectbox to choose a biome
+st.subheader("Select a biome to create the plots")
+biome = st.selectbox("Biome:", biomes) 
+
+# Replace the ":" and " " characters by "_" in the biome name
+biome = biome.replace(":", "_").replace(" ", "_")
+
 # Create PCoA plots for all studies at genus level
 # Load the merged abundance table
-merged_df_genus = pd.read_csv('Abundance_tables/merged_all_abund_tables_genus.csv', index_col=0)
+merged_df_genus = pd.read_csv(f"Abundance_tables/{biome}_merged_all_abund_tables_genus.csv", index_col=0)
 
 # Extract the study_id column and remove it from the DataFrame
 study_id = merged_df_genus['study_id']
@@ -258,6 +272,7 @@ violin_plot_genus.update_layout(
 )
 
 st.plotly_chart(violin_plot_genus, use_container_width=True)
+st.warning('Some studies have just a few samples, so they are not shown in this plot', icon="⚠️")
 
 # Create a boxplot to show the distribution of the distances within and between the studies
 st.subheader(f'Top 5 genera per study')
@@ -334,6 +349,11 @@ st.download_button(
     mime='text/csv',
 )
 
+# Generate a palette with 35 unique colors
+# palette = cc.glasbey_bw_minc_20_maxl_70
+# Convert the colorcet palette to HEX format
+palette_hex = ['#' + ''.join([f'{int(c*255):02x}' for c in rgb]) for rgb in cc.glasbey_bw_minc_20]
+
 # Plot PCoA colored by biome
 st.subheader(f"PCoA plot (Bray Curtis distance) of the analyses from all studies at Genus level")
 
@@ -352,8 +372,14 @@ def update_figure(selected_variable):
     elif selected_variable == 'Data type':
         return 'experiment_type'
 
-pcoa_genus = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color=update_figure(color_option),
-                            hover_data=['study_id'], color_discrete_sequence=px.colors.qualitative.Dark24)
+# Select colors based on the unique values of the selected variable
+color_var = update_figure(color_option)
+unique_values = bc_pcoa_genus_data[color_var].nunique()
+selected_palette = palette_hex[:unique_values]
+
+# Make the plot
+pcoa_genus = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color=color_var,
+                            hover_data=['study_id'], color_discrete_sequence=selected_palette)
 
 # Add title and axis labels
 pcoa_genus.update_traces(

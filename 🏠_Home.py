@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 
-
 # OS and file management
 from PIL import Image
 
@@ -22,15 +21,38 @@ with open('style.css') as f:
 @st.cache_data
 def load_studies_data(filename):
     all_data = pd.read_csv(filename)
+
+    # Rename the entries in the biomes column
+    all_data["biomes"] = all_data["biomes"].replace("root:Engineered:Wastewater:Nutrient removal:Dissolved organics (anaerobic)", 
+                                                                                "root:Engineered:Wastewater:Nutrient removal")
+    all_data["biomes"] = all_data["biomes"].replace("root:Engineered:Wastewater:Nutrient removal:Biological phosphorus removal:Activated sludge", 
+                                                                                "root:Engineered:Wastewater:Nutrient removal")
+    all_data["biomes"] = all_data["biomes"].replace("root:Engineered:Wastewater:Nutrient removal:Nitrogen removal", 
+                                                                                "root:Engineered:Wastewater:Nutrient removal")
+
+    all_data["biomes"] = all_data["biomes"].replace("root:Engineered:Wastewater:Industrial wastewater:Petrochemical", 
+                                                                                "root:Engineered:Wastewater:Industrial wastewater")
+    all_data["biomes"] = all_data["biomes"].replace("root:Engineered:Wastewater:Industrial wastewater:Agricultural wastewater", 
+                                                                                "root:Engineered:Wastewater:Industrial wastewater")
+
+    all_data["biomes"] = all_data["biomes"].replace("root:Engineered:Wastewater:Activated Sludge, root:Engineered:Wastewater:Industrial wastewater", 
+                                                                                "root:Engineered:Wastewater:Activated Sludge")
+    
+    # Remove the "root:Engineered:" part of the biomes column entries
+    all_data["biomes"] = all_data["biomes"].str.replace("root:Engineered:", "")
+
+    # Drop Unnamed columns
+    all_data = all_data.drop(all_data.columns[all_data.columns.str.contains('unnamed',case = False)],axis = 1)
+
     return all_data
 
 # Loading the Mgnify waste water treatment studies data
 # This will be done only once and all the pages will have access to the data
 if 'studies_data' not in st.session_state:
-    st.session_state.studies_data = load_studies_data("Mgnify_studies_wwt_shot_metag_assembly_more10samples.csv")
+    st.session_state.studies_data = load_studies_data("wwt_studies_more_median_taxa_bybiome.csv")
 
 # Add a title and info about the app
-st.title('Summary and EDA of waste water treatment studies from Mgnify')
+st.title('Summary and EDA of waste water treatment studies from Mgnify combined by biomes')
 
 with st.expander('About this app'):
     st.write('''

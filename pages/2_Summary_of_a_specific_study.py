@@ -82,14 +82,19 @@ def preprocess_abund_table(abund_table, phylum):
         else:
             abund_table = abund_table.drop(columns=['kingdom'])
     
+        # Set the phylum column as index
+        abund_table = abund_table.set_index('phylum')
+    
     else:
-        # Delete extra taxonomic columns 
-        if 'Superkingdom' in abund_table.columns and 'Kingdom' in abund_table.columns:
-            abund_table = abund_table.drop(columns=['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
-        elif 'Superkingdom' in abund_table.columns and 'Kingdom' not in abund_table.columns:
-            abund_table = abund_table.drop(columns=['Superkingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
-        else:
-            abund_table = abund_table.drop(columns=['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
+        # Delete extra taxonomic columns
+        # Check available taxonomic levels and drop the corresponding columns
+        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species']
+        for level in taxonomic_levels:
+            if level in abund_table.columns:
+                abund_table = abund_table.drop(columns=level)
+        
+        # Set the genus column as index
+        abund_table = abund_table.set_index('Genus')
 
     return abund_table
 
@@ -123,7 +128,7 @@ st.sidebar.header('Contact')
 st.sidebar.write('If you have any comments or suggestions about this work, please [create an issue](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies/issues/new) in the GitHub repository of this project.')
     
 # Add a title and info about the app
-st.title('Summary and EDA of waste water treatment studies from Mgnify')
+st.title('Summary and EDA of waste water treatment studies from Mgnify combined by biomes')
 
 # Load data for the selected study
 study_info, sample_info = load_study_data(st.session_state.studies_data, selected_study)
@@ -206,185 +211,185 @@ st.download_button(
     mime='text/csv',
 )
 
-# Reshape abundance df so that the assembly_run_ids become a column
-if tax_rank == 'Phylum':
-    abund_df_reshaped = abund_table.melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
-else:  # Genus
-    abund_df_reshaped = abund_table.melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
+# Add condition to check if the study has more than one sample
+if len(sample_info) > 2:
 
-# Split the multiple IDs in the assembly_run_ids column of df1
-sample_info['assembly_run_ids'] = sample_info['assembly_run_ids'].str.split(';')
+    # Reshape abundance df so that the assembly_run_ids become a column, considering the phylum ir genus column is the index
+    if tax_rank == 'Phylum':
+        abund_df_reshaped = abund_table.reset_index().melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
+    else:  # Genus
+        abund_df_reshaped = abund_table.reset_index().melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
 
-# Explode the dataframe based on the assembly_run_ids column
-sample_info_exploded = sample_info.explode('assembly_run_ids')
+    # Split the multiple IDs in the assembly_run_ids column of df1
+    sample_info['assembly_run_ids'] = sample_info['assembly_run_ids'].str.split(';')
 
-# Merge dataframes on the 'assembly_run_ids' column
-samples_df = pd.merge(sample_info_exploded, abund_df_reshaped, left_on='assembly_run_ids', right_on='assembly_run_ids')
+    # Explode the dataframe based on the assembly_run_ids column
+    sample_info_exploded = sample_info.explode('assembly_run_ids')
 
-# Filter the merged df to keep unique rows based on the assembly_run_ids column
-samples_df = samples_df.drop_duplicates(subset=['assembly_run_ids'])
+    # Merge dataframes on the 'assembly_run_ids' column
+    samples_df = pd.merge(sample_info_exploded, abund_df_reshaped, left_on='assembly_run_ids', right_on='assembly_run_ids')
 
-# Filter the merged df to keep only the relevant columns
-samples_df = samples_df[['assembly_run_ids', 'sample_id', 'biome_feature', 'biome_material']].reset_index(drop=True)
+    # Filter the merged df to keep unique rows based on the assembly_run_ids column
+    samples_df = samples_df.drop_duplicates(subset=['assembly_run_ids'])
 
-# Combine biome_feature and biome_material columns if there is info on the columns, otherwise add 'NA'
-samples_df['biome_feature'] = samples_df['biome_feature'].fillna('NA')
-samples_df['biome_material'] = samples_df['biome_material'].fillna('NA')
-samples_df['biome'] = samples_df['biome_feature'] + ' - ' + samples_df['biome_material']
+    # Filter the merged df to keep only the relevant columns
+    samples_df = samples_df[['assembly_run_ids', 'sample_id', 'biome_feature', 'biome_material']].reset_index(drop=True)
 
-# Sort df by assembly_run_ids
-samples_df = samples_df.sort_values(by=['assembly_run_ids']).reset_index(drop=True)
+    # Combine biome_feature and biome_material columns if there is info on the columns, otherwise add 'NA'
+    samples_df['biome_feature'] = samples_df['biome_feature'].fillna('NA')
+    samples_df['biome_material'] = samples_df['biome_material'].fillna('NA')
+    samples_df['biome'] = samples_df['biome_feature'] + ' - ' + samples_df['biome_material']
 
-# Create PcoA plot at taxonomic rank level
-st.subheader(f'PCoA plot at {tax_rank} level with Bray-Curtis distance')
-st.write('The PCoA plot shows the distribution of the analyses from the selected study based on the Bray-Curtis distance between them.')
+    # Sort df by assembly_run_ids
+    samples_df = samples_df.sort_values(by=['assembly_run_ids']).reset_index(drop=True)
 
-# Transpose abundance table
-if tax_rank == 'Phylum':
-    abund_table = abund_table.set_index('phylum').T
-else:  # Genus
-    abund_table = abund_table.set_index('Genus').T
+    # Create PcoA plot at taxonomic rank level
+    st.subheader(f'PCoA plot at {tax_rank} level with Bray-Curtis distance')
+    st.write('The PCoA plot shows the distribution of the analyses from the selected study based on the Bray-Curtis distance between them.')
 
-# Extract analyses names as numpy arrays
-analyses_names = list(abund_table.index.values)
+    # Transpose abundance table
+    abund_table = abund_table.T
 
-# Convert abundance table to numpy array
-abund_table_mat = abund_table.to_numpy()
+    # Extract analyses names as numpy arrays
+    analyses_names = list(abund_table.index.values)
 
-# Obtain bray-curtis distance matrix
-bc_mat = beta_diversity("braycurtis", abund_table_mat, analyses_names)
+    # Convert abundance table to numpy array
+    abund_table_mat = abund_table.to_numpy()
 
-# Replace NaN values with 0
-bc_mat = np.nan_to_num(bc_mat.data, nan=0.0)
+    # Obtain bray-curtis distance matrix
+    bc_mat = beta_diversity("braycurtis", abund_table_mat, analyses_names)
 
-# Run PCoA
-bc_pcoa = pcoa(bc_mat)
+    # Replace NaN values with 0
+    bc_mat = np.nan_to_num(bc_mat.data, nan=0.0)
 
-# Extract the data to plot the PcoA
-bc_pcoa_data = pd.DataFrame(data = bc_pcoa.samples[['PC1', 'PC2']])
+    # Run PCoA
+    bc_pcoa = pcoa(bc_mat)
 
-# Reset index
-bc_pcoa_data = bc_pcoa_data.reset_index(drop=True)
+    # Extract the data to plot the PcoA
+    bc_pcoa_data = pd.DataFrame(data = bc_pcoa.samples[['PC1', 'PC2']])
 
-# Add the biome to the PcoA df
-bc_pcoa_data['biome'] = samples_df['biome']
+    # Reset index
+    bc_pcoa_data = bc_pcoa_data.reset_index(drop=True)
 
-# Get explained variance ratio
-explained_var_ratio = bc_pcoa.proportion_explained
+    # Add the biome to the PcoA df
+    bc_pcoa_data['biome'] = samples_df['biome']
 
-# Create a plotly figure
-pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', 
-                       opacity=0.8, color='biome', 
-                       hover_name=abund_table.index,
-                       color_discrete_sequence=px.colors.qualitative.Plotly)
+    # Get explained variance ratio
+    explained_var_ratio = bc_pcoa.proportion_explained
 
-# Add title and axis labels
-pcoa_plot.update_traces(
-    marker=dict(size=7)
-    ).update_layout(
-    xaxis=dict(
-        title=f'PCo1 ({explained_var_ratio[0]:.2%})',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    yaxis=dict(
-        title=f'PCo2 ({explained_var_ratio[1]:.2%})',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    legend_title=dict(text="Biome", font=dict(size=24)),
-    legend=dict(font=dict(size=20))
-)
+    # Create a plotly figure
+    pcoa_plot = px.scatter(bc_pcoa_data, x='PC1', y='PC2', 
+                        opacity=0.8, color='biome', 
+                        hover_name=abund_table.index,
+                        color_discrete_sequence=px.colors.qualitative.Plotly)
 
-# Show pcoa plot at the chosen taxonomic rank level
-st.plotly_chart(pcoa_plot, use_container_width=True)
+    # Add title and axis labels
+    pcoa_plot.update_traces(
+        marker=dict(size=7)
+        ).update_layout(
+        xaxis=dict(
+            title=f'PCo1 ({explained_var_ratio[0]:.2%})',
+            tickfont=dict(size=18),
+            titlefont=dict(size=20),
+            showgrid=False
+        ),
+        yaxis=dict(
+            title=f'PCo2 ({explained_var_ratio[1]:.2%})',
+            tickfont=dict(size=18),
+            titlefont=dict(size=20),
+            showgrid=False
+        ),
+        legend_title=dict(text="Biome", font=dict(size=24)),
+        legend=dict(font=dict(size=20))
+    )
 
-# Create a boxplot to show the distribution of the distances within the study
-st.subheader(f'Distribution of the Bray-Curtis distances at {tax_rank} level')
+    # Show pcoa plot at the chosen taxonomic rank level
+    st.plotly_chart(pcoa_plot, use_container_width=True)
 
-# Assuming bc_mat is the Bray-Curtis distance matrix you have
-# Convert the distance matrix to a 1D array of distances
-dist_within = squareform(bc_mat)
+    # Create a boxplot to show the distribution of the distances within the study
+    st.subheader(f'Distribution of the Bray-Curtis distances at {tax_rank} level')
 
-# Filter out zero distances (self-comparisons)
-dist_within = dist_within[dist_within != 0]
+    # Assuming bc_mat is the Bray-Curtis distance matrix you have
+    # Convert the distance matrix to a 1D array of distances
+    dist_within = squareform(bc_mat)
 
-# Prepare data for violin plot
-data = {'Distance': dist_within}
-df_violin_plot = pd.DataFrame(data)
+    # Filter out zero distances (self-comparisons)
+    dist_within = dist_within[dist_within != 0]
 
-# Create the violin plot
-violin_plot = px.violin(df_violin_plot, y='Distance', box=True, color_discrete_sequence=px.colors.qualitative.Plotly)
+    # Prepare data for violin plot
+    data = {'Distance': dist_within}
+    df_violin_plot = pd.DataFrame(data)
 
-# Add title and axis labels
-violin_plot.update_layout(
-    yaxis=dict(
-        title='Bray-Curtis Distance',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    legend_title=dict(text='Distance', font=dict(size=24)),
-    legend=dict(font=dict(size=20))
-)
+    # Create the violin plot
+    violin_plot = px.violin(df_violin_plot, y='Distance', box=True, color_discrete_sequence=px.colors.qualitative.Plotly)
 
-# Show violin plot at the chosen taxonomic rank level
-st.plotly_chart(violin_plot, use_container_width=True)
+    # Add title and axis labels
+    violin_plot.update_layout(
+        yaxis=dict(
+            title='Bray-Curtis Distance',
+            tickfont=dict(size=18),
+            titlefont=dict(size=20),
+            showgrid=False
+        ),
+        legend_title=dict(text='Distance', font=dict(size=24)),
+        legend=dict(font=dict(size=20))
+    )
 
-# Create a datframe with the top 10 most abundant taxa
-# Reset the index of the DataFrame, this will add the index as a new column
-abund_table_reset = abund_table.T.reset_index()
+    # Show violin plot at the chosen taxonomic rank level
+    st.plotly_chart(violin_plot, use_container_width=True)
 
-# Remove the first row (which is the index)
-abund_table_reset = abund_table_reset.drop(abund_table_reset.index[0])
+    # Create a datframe with the top 10 most abundant taxa
+    # Reset the index of the DataFrame, this will add the index as a new column
+    abund_table_reset = abund_table.T.reset_index()
 
-if tax_rank == 'Phylum':
-    # Now use the taxa column as id_vars in melt
-    abund_table_top10 = abund_table_reset.melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
-    # Rename the column
-    abund_table_top10 = abund_table_top10.rename(columns={'phylum': 'taxa'})
-else:  # Genus
-    abund_table_top10 = abund_table_reset.melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
-    abund_table_top10 = abund_table_top10.rename(columns={'Genus': 'taxa'})
+    # Remove the first row (which is the index)
+    abund_table_reset = abund_table_reset.drop(abund_table_reset.index[0])
 
-# Group by taxonomic rank and sum the counts
-abund_table_top10 = abund_table_top10.groupby('taxa').sum().reset_index()
+    if tax_rank == 'Phylum':
+        # Now use the taxa column as id_vars in melt
+        abund_table_top10 = abund_table_reset.melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
+        # Rename the column
+        abund_table_top10 = abund_table_top10.rename(columns={'phylum': 'taxa'})
+    else:  # Genus
+        abund_table_top10 = abund_table_reset.melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
+        abund_table_top10 = abund_table_top10.rename(columns={'Genus': 'taxa'})
 
-# Sort values by count
-abund_table_top10 = abund_table_top10.sort_values(by='count', ascending=False).reset_index(drop=True)
+    # Group by taxonomic rank and sum the counts
+    abund_table_top10 = abund_table_top10.groupby('taxa').sum().reset_index()
 
-# Keep only the top 10 most abundant taxa
-abund_table_top10 = abund_table_top10.head(10)
+    # Sort values by count
+    abund_table_top10 = abund_table_top10.sort_values(by='count', ascending=False).reset_index(drop=True)
 
-# Create a bar plot to show the top 10 most abundant taxa
-st.subheader(f'Top 10 most abundant taxa at {tax_rank} level')
+    # Keep only the top 10 most abundant taxa
+    abund_table_top10 = abund_table_top10.head(10)
 
-# Create a plotly figure
-top10_plot = px.bar(abund_table_top10, x="taxa", y='count', color_discrete_sequence=px.colors.qualitative.Plotly)
+    # Create a bar plot to show the top 10 most abundant taxa
+    st.subheader(f'Top 10 most abundant taxa at {tax_rank} level')
 
-# Add title and axis labels
-top10_plot.update_layout(
-    xaxis=dict(
-        title=f'{tax_rank}',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    yaxis=dict(
-        title='Count',
-        tickfont=dict(size=18),
-        titlefont=dict(size=20),
-        showgrid=False
-    ),
-    legend_title=dict(text='Count', font=dict(size=24)),
-    legend=dict(font=dict(size=20))
-)
+    # Create a plotly figure
+    top10_plot = px.bar(abund_table_top10, x="taxa", y='count', color_discrete_sequence=px.colors.qualitative.Plotly)
 
-# Show top 10 most abundant taxa plot at the chosen taxonomic rank level
-st.plotly_chart(top10_plot, use_container_width=True)
+    # Add title and axis labels
+    top10_plot.update_layout(
+        xaxis=dict(
+            title=f'{tax_rank}',
+            tickfont=dict(size=18),
+            titlefont=dict(size=20),
+            showgrid=False
+        ),
+        yaxis=dict(
+            title='Count',
+            tickfont=dict(size=18),
+            titlefont=dict(size=20),
+            showgrid=False
+        ),
+        legend_title=dict(text='Count', font=dict(size=24)),
+        legend=dict(font=dict(size=20))
+    )
 
+    # Show top 10 most abundant taxa plot at the chosen taxonomic rank level
+    st.plotly_chart(top10_plot, use_container_width=True)
 
-
+else:
+    st.warning('The selected study has less than two samples, so the PCoA plot and the distribution of the Bray-Curtis distances cannot be created.', icon='⚠️')
 

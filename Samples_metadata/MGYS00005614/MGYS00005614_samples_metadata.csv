@@ -1,0 +1,9 @@
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids
+ERS3742478,CP6,SAMEA5953998,hospital wastewater metagenome,,,,,,,ERZ1505396
+ERS3742481,Seafield,SAMEA5954001,wastewater treatment plant inflow metagenome,,,,,,,ERZ1505397
+ERS3742476,CP4,SAMEA5953996,hospital wastewater metagenome,,,,,,,ERZ1505398
+ERS3742477,CP5,SAMEA5953997,hospital wastewater metagenome,,,,,,,ERZ1505399
+ERS3742475,CP3,SAMEA5953995,hospital wastewater metagenome,,,,,,,ERZ1505401
+ERS3742480,CP8,SAMEA5954000,hospital wastewater metagenome,,,,,,,ERZ1505400
+ERS3742474,CP1,SAMEA5953994,hospital wastewater metagenome,,,,,,,ERZ1505402
+ERS3742479,CP7,SAMEA5953999,hospital wastewater metagenome,,,,,,,ERZ1505403

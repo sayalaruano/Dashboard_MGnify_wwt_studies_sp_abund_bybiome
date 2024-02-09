@@ -8,3 +8,5 @@ scikit-learn
 scikit-bio 
 streamlit
 streamlit-aggrid
+seaborn
+colorcet

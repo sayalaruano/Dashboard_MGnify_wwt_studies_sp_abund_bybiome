@@ -57,7 +57,7 @@ def load_abund_table(selected_study, phylum):
 
 # Function to preprocess abundance table for a specific study
 def preprocess_abund_table(abund_table, phylum):
-    # Delete NaN rows
+    # Delete rows with NANs in all columns
     abund_table = abund_table.dropna(how='all')
     if phylum:
         # Delete kingdom and superkingdom columns
@@ -65,20 +65,21 @@ def preprocess_abund_table(abund_table, phylum):
             abund_table = abund_table.drop(columns=['superkingdom', 'kingdom'])
         else:
             abund_table = abund_table.drop(columns=['kingdom'])
-        
-         # Set the phylum column as index
+    
+        # Set the phylum column as index
         abund_table = abund_table.set_index('phylum')
     
     else:
-        # Delete extra taxonomic columns 
-        if 'Superkingdom' in abund_table.columns:
-            abund_table = abund_table.drop(columns=['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
-        else:
-            abund_table = abund_table.drop(columns=['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species'])
+        # Delete extra taxonomic columns
+        # Check available taxonomic levels and drop the corresponding columns
+        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species']
+        for level in taxonomic_levels:
+            if level in abund_table.columns:
+                abund_table = abund_table.drop(columns=level)
         
-         # Set the genus column as index
+        # Set the genus column as index
         abund_table = abund_table.set_index('Genus')
-    
+
     return abund_table
 
 # Function to load data for a specific study
@@ -117,7 +118,7 @@ st.sidebar.header('Contact')
 st.sidebar.write('If you have any comments or suggestions about this work, please [create an issue](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies/issues/new) in the GitHub repository of this project.')
 
 # Add a title and info about the app
-st.title('Summary and EDA of waste water treatment studies from Mgnify')
+st.title('Summary and EDA of waste water treatment studies from Mgnify combined by biomes')
 
 # Create a df with study ids and biomes
 filt_columns = ['study_id', 'biomes']

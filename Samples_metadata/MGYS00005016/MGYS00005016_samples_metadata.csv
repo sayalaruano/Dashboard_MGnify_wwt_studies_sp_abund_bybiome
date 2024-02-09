@@ -1,0 +1,5 @@
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids
+SRS2384392,S2,SAMN07414803,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781412
+SRS2384393,S1,SAMN07414802,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781411
+SRS2384394,S3,SAMN07414804,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781410
+SRS2384395,S4,SAMN07414805,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781409

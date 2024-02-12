@@ -56,6 +56,17 @@ def preprocess_abund_table(abund_table, phylum):
         abund_table = abund_table.set_index('Genus')
 
     return abund_table
+
+# Function to load data for a specific study
+def load_study_data(all_data, selected_study):
+    # Filter data for the selected study
+    study_info = all_data[all_data['study_id'] == selected_study]
+    
+    # Load sample information for the study
+    sample_info = pd.read_csv(f"Samples_metadata/{selected_study}/{selected_study}_samples_metadata.csv")
+    
+    return sample_info
+
 #%%
 # Separate the studies by their biomes
 # Load the summary table of all studies
@@ -75,20 +86,14 @@ wwt_studies_allsamples_list = [x for x in wwt_studies_allsamples_list if str(x) 
 biome_count = studies_data["biomes"].value_counts()
 
 # Rename the entries in the biomes column
-studies_data["biomes"] = studies_data["biomes"].replace("root:Engineered:Wastewater:Nutrient removal:Dissolved organics (anaerobic)", 
-                                                                            "root:Engineered:Wastewater:Nutrient removal")
-studies_data["biomes"] = studies_data["biomes"].replace("root:Engineered:Wastewater:Nutrient removal:Biological phosphorus removal:Activated sludge", 
-                                                                            "root:Engineered:Wastewater:Nutrient removal")
-studies_data["biomes"] = studies_data["biomes"].replace("root:Engineered:Wastewater:Nutrient removal:Nitrogen removal", 
-                                                                            "root:Engineered:Wastewater:Nutrient removal")
-
-studies_data["biomes"] = studies_data["biomes"].replace("root:Engineered:Wastewater:Industrial wastewater:Petrochemical", 
-                                                                            "root:Engineered:Wastewater:Industrial wastewater")
-studies_data["biomes"] = studies_data["biomes"].replace("root:Engineered:Wastewater:Industrial wastewater:Agricultural wastewater", 
-                                                                            "root:Engineered:Wastewater:Industrial wastewater")
-
-studies_data["biomes"] = studies_data["biomes"].replace("root:Engineered:Wastewater:Activated Sludge, root:Engineered:Wastewater:Industrial wastewater", 
-                                                                            "root:Engineered:Wastewater:Activated Sludge")
+studies_data['biomes'] = studies_data['biomes'].replace({
+    "root:Engineered:Wastewater:Nutrient removal:Biological phosphorus removal:Activated sludge": "root:Engineered:Wastewater:Activated Sludge",
+    "root:Engineered:Wastewater:Nutrient removal:Dissolved organics (anaerobic)": "root:Engineered:Wastewater:Nutrient removal",
+    "root:Engineered:Wastewater:Nutrient removal:Nitrogen removal": "root:Engineered:Wastewater:Nutrient removal",
+    "root:Engineered:Wastewater:Industrial wastewater:Petrochemical": "root:Engineered:Wastewater:Industrial wastewater",
+    "root:Engineered:Wastewater:Industrial wastewater:Agricultural wastewater": "root:Engineered:Wastewater:Industrial wastewater",
+    "root:Engineered:Wastewater:Activated Sludge, root:Engineered:Wastewater:Industrial wastewater": "root:Engineered:Wastewater:Activated Sludge"
+})
 
 # Count the number of studies per biome
 biome_count_new = studies_data["biomes"].value_counts()
@@ -106,7 +111,7 @@ for biome in biome_list:
 # Remove the "root:Engineered:" prefix from the biome names in the dictionary
 biome_dict = {biome.replace("root:Engineered:", ""): study_ids for biome, study_ids in biome_dict.items()}
 
-# Rplecase ":" and speaces with "_" in the biome names
+# Replace ":" and speaces with "_" in the biome names
 biome_dict = {biome.replace(":", "_").replace(" ", "_"): study_ids for biome, study_ids in biome_dict.items()}
 
 #%%
@@ -115,6 +120,7 @@ for biome, study_ids in biome_dict.items():
     # Initialize empty DataFrames for phylum and genus merged data
     merged_df_phylum = pd.DataFrame()
     merged_df_genus = pd.DataFrame()
+    merged_df_sample_metadata = pd.DataFrame()
 
     # Process phylum and genus tables for each biome
     for selected_study in study_ids:
@@ -141,15 +147,29 @@ for biome, study_ids in biome_dict.items():
             
             # Add the data from the current study to the merged DataFrame
             merged_df_genus = pd.concat([merged_df_genus, abund_table_genus], axis=1)
+        
+        # Load metadata for the study
+        sample_metadata_df = load_study_data(studies_data, selected_study)
+        if sample_metadata_df is not None:
+            # Add a column with the study ID for all samples 
+            sample_metadata_df['study_id'] = selected_study
 
-    # Fill NaN values with 0 and transpose the DataFrames
+            # Add the data from the current study to the merged DataFrame
+            merged_df_sample_metadata = pd.concat([merged_df_sample_metadata, sample_metadata_df], axis=0)
+
+    # Fill NaN values with 0, transpose the DataFrames and expor them
     if not merged_df_phylum.empty:
         merged_df_phylum = merged_df_phylum.fillna(0).T.rename(columns={0: 'study_id'})
+        merged_df_phylum.index.name = 'assembly_run_ids'
         merged_df_phylum.to_csv(f'Abundance_tables/{biome}_merged_all_abund_tables_phylum.csv')
 
     if not merged_df_genus.empty:
         merged_df_genus = merged_df_genus.fillna(0).T.rename(columns={0: 'study_id'})
+        merged_df_genus.index.name = 'assembly_run_ids'
         merged_df_genus.to_csv(f'Abundance_tables/{biome}_merged_all_abund_tables_genus.csv')
+    
+    if not merged_df_sample_metadata.empty:
+        merged_df_sample_metadata.to_csv(f'Samples_metadata/{biome}_merged_samples_metadata.csv', index=False)
 
 #%%
 # Reset index of merged_df_genus

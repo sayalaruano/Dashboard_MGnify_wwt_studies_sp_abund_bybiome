@@ -1,0 +1,8 @@
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids,study_id
+ERS223627,palm oil mill effluent (POME) metagenome,SAMEA2163750,palm oil mill effluent (POME) metagenome,2.0,101.0,Malaysia,palm oil mill effluent,closed biodigester,sludge,ERR276848,MGYS00001389
+DRS034400,DRS034400,SAMD00056903,DRS034400,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,water,DRR066655,MGYS00001851
+DRS034401,DRS034401,SAMD00056904,DRS034401,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,biofilm,DRR066667;DRR066656,MGYS00001851
+DRS034402,DRS034402,SAMD00056905,DRS034402,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,water,DRR066657,MGYS00001851
+DRS034403,DRS034403,SAMD00056906,DRS034403,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,biofilm,DRR066668;DRR066658,MGYS00001851
+DRS034404,DRS034404,SAMD00056907,DRS034404,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,water,DRR066659,MGYS00001851
+DRS034405,DRS034405,SAMD00056908,DRS034405,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,biofilm,DRR066660,MGYS00001851

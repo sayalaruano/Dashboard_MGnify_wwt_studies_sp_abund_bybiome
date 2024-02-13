@@ -25,8 +25,8 @@ def load_studies_data(filename):
     # Rename the entries in the biomes column
     all_data['biomes'] = all_data['biomes'].replace({
         "root:Engineered:Wastewater:Nutrient removal:Biological phosphorus removal:Activated sludge": "root:Engineered:Wastewater:Activated Sludge",
-        "root:Engineered:Wastewater:Nutrient removal:Dissolved organics (anaerobic)": "root:Engineered:Wastewater:Nutrient removal",
-        "root:Engineered:Wastewater:Nutrient removal:Nitrogen removal": "root:Engineered:Wastewater:Nutrient removal",
+        "root:Engineered:Wastewater:Nutrient removal:Dissolved organics (anaerobic)": "root:Engineered:Wastewater",
+        "root:Engineered:Wastewater:Nutrient removal:Nitrogen removal": "root:Engineered:Wastewater",
         "root:Engineered:Wastewater:Industrial wastewater:Petrochemical": "root:Engineered:Wastewater:Industrial wastewater",
         "root:Engineered:Wastewater:Industrial wastewater:Agricultural wastewater": "root:Engineered:Wastewater:Industrial wastewater",
         "root:Engineered:Wastewater:Activated Sludge, root:Engineered:Wastewater:Industrial wastewater": "root:Engineered:Wastewater:Activated Sludge"

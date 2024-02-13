@@ -1,4 +1,4 @@
-﻿sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids,study_id
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids,study_id
 ERS3742478,CP6,SAMEA5953998,hospital wastewater metagenome,,,,,,,ERZ1505396,MGYS00005614
 ERS3742481,Seafield,SAMEA5954001,wastewater treatment plant inflow metagenome,,,,,,,ERZ1505397,MGYS00005614
 ERS3742476,CP4,SAMEA5953996,hospital wastewater metagenome,,,,,,,ERZ1505398,MGYS00005614
@@ -188,6 +188,7 @@ ERS2597496,DTU2017_MG_177_NC_I,SAMEA4777548,extraction_control,66.9425,-53.6531,
 ERS2597499,DTU2017_MG_180_NC_L,SAMEA4777551,extraction_control,66.9425,-53.6531,Denmark,,,,ERR2683536,MGYS00003139
 ERS2597500,DTU2017_MG_181_NC_M,SAMEA4777552,extraction_control,66.9425,-53.6531,Denmark,,,,ERR2683537,MGYS00003139
 ERS2597501,DTU2017_MG_182_NC_N,SAMEA4777553,extraction_control,66.9425,-53.6531,Denmark,,,,ERR2683538,MGYS00003139
+,,,,,,,,,,,MGYS00003139
 ERS3348413,KHAJOD1,SAMEA5546360,"Wastewater (or waste water) is any water that has been affected by human use. Wastewater is &quot;used water from any combination of domestic, industrial, commercial or agricultural activities, surface runoff or stormwater, and any sewer inflow or sewer infiltration&quot;.",21.1161,72.788,India,,,,ERR3258496,MGYS00004715
 SRS2384392,S2,SAMN07414803,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781412,MGYS00005016
 SRS2384393,S1,SAMN07414802,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781411,MGYS00005016
@@ -253,6 +254,7 @@ ERS1909452,Randers-0512B,SAMEA104284474,Metagenome-Randers-0512,56.4697,10.0373,
 ERS1909453,Randers-0323A,SAMEA104284475,Metagenome-Randers-0323,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026800,MGYS00005431
 ERS1909455,Randers-0113,SAMEA104284477,Metagenome-Randers-0113,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026810,MGYS00005431
 ERS1909456,Randers-0321,SAMEA104284478,Metagenome-Randers-0321,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026814,MGYS00005431
+ERS223627,palm oil mill effluent (POME) metagenome,SAMEA2163750,palm oil mill effluent (POME) metagenome,2.0,101.0,Malaysia,palm oil mill effluent,closed biodigester,sludge,ERR276848,MGYS00001389
 ERS1572689,Black Water Project,SAMEA100930918,Black Water,,,Netherlands,,,,ERR1857181,MGYS00001566
 ERS1572690,Black Water Project,SAMEA100931668,Black Water,,,Netherlands,,,,ERR1857182,MGYS00001566
 ERS1572691,Black Water Project,SAMEA100932418,Black Water,,,Netherlands,,,,ERR1857183,MGYS00001566
@@ -289,5 +291,11 @@ ERS1572721,Black Water Project,SAMEA100954918,Effluent PBR,,,Netherlands,,,,ERR1
 ERS1572722,Black Water Project,SAMEA100955668,Effluent PBR,,,Netherlands,,,,ERR1857214,MGYS00001566
 ERS1572723,Black Water Project,SAMEA100956418,Effluent PBR,,,Netherlands,,,,ERR1857215,MGYS00001566
 ERS1572724,Black Water Project,SAMEA100957168,Effluent PBR,,,Netherlands,,,,ERR1857216,MGYS00001566
+DRS034400,DRS034400,SAMD00056903,DRS034400,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,water,DRR066655,MGYS00001851
+DRS034401,DRS034401,SAMD00056904,DRS034401,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,biofilm,DRR066667;DRR066656,MGYS00001851
+DRS034402,DRS034402,SAMD00056905,DRS034402,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,water,DRR066657,MGYS00001851
+DRS034403,DRS034403,SAMD00056906,DRS034403,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,biofilm,DRR066668;DRR066658,MGYS00001851
+DRS034404,DRS034404,SAMD00056907,DRS034404,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,water,DRR066659,MGYS00001851
+DRS034405,DRS034405,SAMD00056908,DRS034405,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,biofilm,DRR066660,MGYS00001851
 ERS1833119,b2forensics1,SAMEA104174101,wastewater sample collected on november 1st 2016,48.698,2.1795,France,,,,ERR2041951,MGYS00001903
 ERS946133,AS95Spen15102014,SAMEA3638984,AS95Spen15102014,54.7149,-1.614,United Kingdom,Freshwater biome,Wastewater treatment plant,Sewage,ERR1101751,MGYS00000555

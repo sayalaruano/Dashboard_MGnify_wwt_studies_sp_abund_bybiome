@@ -1,4 +1,4 @@
-﻿sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids,study_id
+sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids,study_id
 ERS3742478,CP6,SAMEA5953998,hospital wastewater metagenome,,,,,,,ERZ1505396,MGYS00005614
 ERS3742481,Seafield,SAMEA5954001,wastewater treatment plant inflow metagenome,,,,,,,ERZ1505397,MGYS00005614
 ERS3742476,CP4,SAMEA5953996,hospital wastewater metagenome,,,,,,,ERZ1505398,MGYS00005614
@@ -188,6 +188,7 @@ ERS2597496,DTU2017_MG_177_NC_I,SAMEA4777548,extraction_control,66.9425,-53.6531,
 ERS2597499,DTU2017_MG_180_NC_L,SAMEA4777551,extraction_control,66.9425,-53.6531,Denmark,,,,ERR2683536,MGYS00003139
 ERS2597500,DTU2017_MG_181_NC_M,SAMEA4777552,extraction_control,66.9425,-53.6531,Denmark,,,,ERR2683537,MGYS00003139
 ERS2597501,DTU2017_MG_182_NC_N,SAMEA4777553,extraction_control,66.9425,-53.6531,Denmark,,,,ERR2683538,MGYS00003139
+,,,,,,,,,,,MGYS00003139
 ERS3348413,KHAJOD1,SAMEA5546360,"Wastewater (or waste water) is any water that has been affected by human use. Wastewater is &quot;used water from any combination of domestic, industrial, commercial or agricultural activities, surface runoff or stormwater, and any sewer inflow or sewer infiltration&quot;.",21.1161,72.788,India,,,,ERR3258496,MGYS00004715
 SRS2384392,S2,SAMN07414803,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781412,MGYS00005016
 SRS2384393,S1,SAMN07414802,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781411,MGYS00005016

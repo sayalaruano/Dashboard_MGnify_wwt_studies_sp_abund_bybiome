@@ -72,7 +72,7 @@ def load_abund_table(selected_study, phylum):
     return abund_table
 
 # Function to preprocess abundance table for a specific study
-def preprocess_abund_table(abund_table, phylum):
+def preprocess_abund_table(abund_table,phylum):
     # Delete rows with NANs in all columns
     abund_table = abund_table.dropna(how='all')
     if phylum:
@@ -88,7 +88,7 @@ def preprocess_abund_table(abund_table, phylum):
     else:
         # Delete extra taxonomic columns
         # Check available taxonomic levels and drop the corresponding columns
-        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species']
+        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Family_Genus']
         for level in taxonomic_levels:
             if level in abund_table.columns:
                 abund_table = abund_table.drop(columns=level)
@@ -193,17 +193,27 @@ else:  # Genus
 # Display abundance table for the selected study
 st.subheader(f"Abundance table at {tax_rank} level")
 
-builder = GridOptionsBuilder.from_dataframe(abund_table)
+# Capture the name of the index, or default to 'index' if it's unnamed
+index_name = abund_table.index.name if abund_table.index.name else 'index'
+
+# Reset the index to make it a column
+abund_table_with_index = abund_table.reset_index()
+
+# Ensure the index column is the first one
+column_order = [index_name] + [col for col in abund_table_with_index.columns if col != index_name]
+abund_table_with_index = abund_table_with_index[column_order]
+
+builder = GridOptionsBuilder.from_dataframe(abund_table_with_index)
 builder.configure_default_column(editable=True, groupable=True)
 builder.configure_side_bar(filters_panel = True, columns_panel = True)
 builder.configure_selection(selection_mode="multiple")
 builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
 go = builder.build()
 
-AgGrid(abund_table, gridOptions=go)
+AgGrid(abund_table_with_index, gridOptions=go)
 
 # Button to download the data
-abund_table_csv = convert_df(abund_table)
+abund_table_csv = convert_df(abund_table_with_index)
 st.download_button(
     label="Download abundance data as CSV",
     data=abund_table_csv,

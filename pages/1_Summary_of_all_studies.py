@@ -29,63 +29,6 @@ st.set_page_config(
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-
-@st.cache_data
-# Function to load abundance table for a specific study
-def load_abund_table(selected_study, phylum):
-    # Set the folder name 
-    folder_path = f"Abundance_tables/{selected_study}/"
-
-    # Broad pattern to initially match files
-    broad_pattern = f"{selected_study}*taxonomy*.csv"
-    file_list = glob.glob(os.path.join(folder_path, broad_pattern))
-
-    if phylum:
-        # Filtering for phylum taxonomy files
-        filtered_files = [f for f in file_list if 'phylum_taxonomy' in f]
-    else:
-        # Filtering out unwanted files (those with '_phylum_')
-        filtered_files = [f for f in file_list if '_phylum_' not in f]
-
-    # Check if the filtered list is not empty
-    if filtered_files:
-        filename = filtered_files[0]  # Selecting the first matching file
-    else:
-        print(f"No files found for the study '{selected_study}' in folder '{folder_path}'.")
-        return None
-
-    # Load abundance table for the study
-    abund_table = pd.read_csv(filename, sep=',')
-    
-    return abund_table
-
-# Function to preprocess abundance table for a specific study
-def preprocess_abund_table(abund_table, phylum):
-    # Delete rows with NANs in all columns
-    abund_table = abund_table.dropna(how='all')
-    if phylum:
-        # Delete kingdom and superkingdom columns
-        if 'superkingdom' in abund_table.columns:
-            abund_table = abund_table.drop(columns=['superkingdom', 'kingdom'])
-        else:
-            abund_table = abund_table.drop(columns=['kingdom'])
-    
-        # Set the phylum column as index
-        abund_table = abund_table.set_index('phylum')
-    
-    else:
-        # Delete extra taxonomic columns
-        # Check available taxonomic levels and drop the corresponding columns
-        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species']
-        for level in taxonomic_levels:
-            if level in abund_table.columns:
-                abund_table = abund_table.drop(columns=level)
-        
-        # Set the genus column as index
-        abund_table = abund_table.set_index('Genus')
-
-    return abund_table
-
 # Function to download the data
 @st.cache_data
 def convert_df(df):
@@ -176,21 +119,21 @@ biome = st.selectbox("Biome:", biomes)
 biome = biome.replace(":", "_").replace(" ", "_")
 
 # Create PCoA plots for all studies at genus level
-# Load the merged abundance table
-merged_df_genus = pd.read_csv(f"Abundance_tables/{biome}_merged_all_abund_tables_genus.csv", index_col=0)
-
-# Extract the study_id column and remove it from the DataFrame
-study_id = merged_df_genus['study_id']
-merged_df_genus = merged_df_genus.drop(columns=['study_id'])
+# Load the merged abundance and sample data
+abund_df_genus = pd.read_csv(f"Abundance_tables/Merged_tables/{biome}/{biome}_merged_abund_tables_genus.csv", index_col=0)
+tax_df_genus = pd.read_csv(f"Abundance_tables/Merged_tables/{biome}/{biome}_merged_taxa_tables_genus.csv", index_col=0)
+sample_df_genus = pd.read_csv(f"Samples_metadata/Merged_tables/{biome}_merged_samples_metadata.csv", index_col=0)
+study_ids = pd.read_csv(f"Abundance_tables/Merged_tables/{biome}/{biome}_studies_per_sample.csv", index_col=0)
 
 # Transpose the DataFrame
-merged_df_genus_transp = merged_df_genus.T
+abund_df_genus_transp = abund_df_genus.T
+tax_df_genus_transp = tax_df_genus.T
 
 # Extract analyses names as numpy arrays
-analyses_names = list(merged_df_genus.index.values)
+analyses_names = list(abund_df_genus_transp.index.values)
 
 # Convert abundance table to numpy array
-abund_table_mat_genus = merged_df_genus.to_numpy()
+abund_table_mat_genus = abund_df_genus_transp.to_numpy()
 
 # Obtain bray-curtis distance matrix
 bc_mat_genus = beta_diversity("braycurtis", abund_table_mat_genus, analyses_names)
@@ -208,10 +151,10 @@ bc_pcoa_genus_data = pd.DataFrame(data = bc_pcoa_genus.samples, columns = ['PC1'
 bc_pcoa_genus_data = bc_pcoa_genus_data.reset_index(drop=True)
 
 # Add analyses names as index
-bc_pcoa_genus_data.index = merged_df_genus_transp.columns
+bc_pcoa_genus_data.index = abund_df_genus.columns
 
 # Add study_id column to the PCoA df
-bc_pcoa_genus_data['study_id'] = study_id
+bc_pcoa_genus_data['study_id'] = study_ids["study_id"]
 
 # Add biome column to the PCoA df
 bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
@@ -234,9 +177,9 @@ st.subheader(f'Distribution of the Bray-Curtis distances at Genus level')
 distances_df = pd.DataFrame()
 
 # Loop over each unique study ID
-for study in np.unique(study_id):
+for study in np.unique(study_ids):
     # Get the indices of samples belonging to this study
-    indices = np.where(study_id == study)[0]
+    indices = np.where(study_ids == study)[0]
 
     # Extract the submatrix of distances for these samples
     submatrix = bc_mat_genus[np.ix_(indices, indices)]
@@ -276,15 +219,28 @@ st.warning('Some studies have just a few samples, so they are not shown in this 
 
 # Create a boxplot to show the distribution of the distances within and between the studies
 st.subheader(f'Top 5 genera per study')
+
+# Merge the abund_df_genus_transp and tax_df_genus_transp by index
+abund_df_genus_merged = abund_df_genus.merge(tax_df_genus, left_index=True, right_index=True)
+
+# Set "Genus" column as index for the merged DataFrame
+abund_df_genus_merged.index = abund_df_genus_merged['Genus']
+
+# Delete extra taxonomic columns
+abund_df_genus_merged.drop(columns=['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus'], inplace=True)
+
+# Transpose the DataFrame
+abund_df_genus_merged_transp = abund_df_genus_merged.T
+
 # Add study_id back to merged_df_genus
-merged_df_genus['study_id'] = study_id
+abund_df_genus_merged_transp['study_id'] = study_ids
 
 # Initialize an empty DataFrame for the top 5 genera data
 top_genera_df = pd.DataFrame()
 
 # Loop over each study to find the top 5 genera
-for study in merged_df_genus['study_id'].unique():
-    study_data = merged_df_genus[merged_df_genus['study_id'] == study]
+for study in abund_df_genus_merged_transp['study_id'].unique():
+    study_data = abund_df_genus_merged_transp[abund_df_genus_merged_transp['study_id'] == study]
     top_genera = study_data.drop(columns='study_id').sum().nlargest(5)
     total_abundance = top_genera.sum()
     
@@ -349,9 +305,7 @@ st.download_button(
     mime='text/csv',
 )
 
-# Generate a palette with 35 unique colors
-# palette = cc.glasbey_bw_minc_20_maxl_70
-# Convert the colorcet palette to HEX format
+# Generate a palette with 35 unique colors and convert the colorcet palette to HEX format
 palette_hex = ['#' + ''.join([f'{int(c*255):02x}' for c in rgb]) for rgb in cc.glasbey_bw_minc_20]
 
 # Plot PCoA colored by biome

@@ -1,5 +1,6 @@
 #%%
 import pandas as pd
+import numpy as np
 import glob
 import os
 
@@ -35,39 +36,46 @@ def preprocess_abund_table(abund_table, phylum):
     # Delete rows with NANs in all columns
     abund_table = abund_table.dropna(how='all')
     if phylum:
-        # Delete kingdom and superkingdom columns
-        if 'superkingdom' in abund_table.columns:
-            abund_table = abund_table.drop(columns=['superkingdom', 'kingdom'])
-        else:
-            abund_table = abund_table.drop(columns=['kingdom'])
-    
-        # Set the phylum column as index
-        abund_table = abund_table.set_index('phylum')
+        # List of expected taxonomic levels
+        expected_tax_levels = ['kingdom', 'phylum']
     
     else:
-        # Delete extra taxonomic columns
-        # Check available taxonomic levels and drop the corresponding columns
-        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species']
-        for level in taxonomic_levels:
-            if level in abund_table.columns:
-                abund_table = abund_table.drop(columns=level)
-        
-        # Set the genus column as index
-        abund_table = abund_table.set_index('Genus')
+        # List of expected taxonomic levels
+        expected_tax_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Family_Genus']
 
-    return abund_table
+        # Add missing taxonomic levels with empty values
+        for i, tax_level in enumerate(expected_tax_levels):
+            if tax_level not in abund_table.columns:
+                abund_table.insert(i, tax_level, "")
+
+    # Add the taxonomic columns to a different df and drop them from the original abundance table
+    taxonomic_df = pd.DataFrame()
+    for tax_level in expected_tax_levels:
+        if tax_level in abund_table.columns:
+            taxonomic_df[tax_level] = abund_table[tax_level]
+            abund_table = abund_table.drop(columns=[tax_level])
+            
+    # Define the column names for this format
+    taxonomic_df.columns  = expected_tax_levels
+
+    return abund_table, taxonomic_df
 
 # Function to load data for a specific study
-def load_study_data(all_data, selected_study):
-    # Filter data for the selected study
-    study_info = all_data[all_data['study_id'] == selected_study]
-    
+def load_sample_data(selected_study):    
     # Load sample information for the study
     sample_info = pd.read_csv(f"Samples_metadata/{selected_study}/{selected_study}_samples_metadata.csv")
     
     return sample_info
 
-#%%
+def create_consensus_column(df, column_name):
+    # Filter columns that have the same name as 'column_name'
+    columns = df.filter(like=column_name).columns
+
+    # Use the first non-NaN value found across the columns for each row
+    consensus_column = df[columns].apply(lambda x: next((item for item in x if pd.notna(item)), np.nan), axis=1)
+
+    return consensus_column
+
 # Separate the studies by their biomes
 # Load the summary table of all studies
 studies_data = pd.read_csv('wwt_studies_more_median_taxa_bybiome.csv')
@@ -114,124 +122,165 @@ biome_dict = {biome.replace("root:Engineered:", ""): study_ids for biome, study_
 # Replace ":" and speaces with "_" in the biome names
 biome_dict = {biome.replace(":", "_").replace(" ", "_"): study_ids for biome, study_ids in biome_dict.items()}
 
-#%%
-# Iterate through the biomes in the dictionary
+# Process and merge data for each biome
 for biome, study_ids in biome_dict.items():
-    # Initialize empty DataFrames for phylum and genus merged data
-    merged_df_phylum = pd.DataFrame()
-    merged_df_genus = pd.DataFrame()
-    merged_df_sample_metadata = pd.DataFrame()
+    abund_dfs_phylum = []
+    abund_dfs_genus = []
+    taxa_dfs_phylum = []
+    taxa_dfs_genus = []
+    metadata_dfs = []
+    studies_per_sample = []
 
-    # Process phylum and genus tables for each biome
     for selected_study in study_ids:
-        # Process phylum table
+        # Process phylum-level data
         abund_table_phylum = load_abund_table(selected_study, phylum=True)
         if abund_table_phylum is not None:
-            abund_table_phylum = preprocess_abund_table(abund_table_phylum, phylum=True)
+            # Preprocess the abundance table
+            processed_abund_phylum, processed_taxa_phylum = preprocess_abund_table(abund_table_phylum, phylum=True)
+            
+            # Set the index to the phylum column for both dataframes
+            processed_taxa_phylum.set_index('phylum', inplace=True)
+            processed_abund_phylum.set_index(processed_taxa_phylum.index, inplace=True)
+            
+            # Append the processed dataframes to the lists
+            abund_dfs_phylum.append(processed_abund_phylum)
+            taxa_dfs_phylum.append(processed_taxa_phylum)
 
-            # Add a row with the study ID for all samples 
-            study_id_row_phylum = pd.Series(selected_study, index=abund_table_phylum.columns)
-            abund_table_phylum = pd.concat([pd.DataFrame([study_id_row_phylum]), abund_table_phylum])
-
-            # Add the data from the current study to the merged DataFrame
-            merged_df_phylum = pd.concat([merged_df_phylum, abund_table_phylum], axis=1)
-
-        # Process genus table
+        # Process genus-level data
         abund_table_genus = load_abund_table(selected_study, phylum=False)
         if abund_table_genus is not None:
-            abund_table_genus = preprocess_abund_table(abund_table_genus, phylum=False)
-
-            # Add a row with the study ID for all samples
-            study_id_row_genus = pd.Series(selected_study, index=abund_table_genus.columns)
-            abund_table_genus = pd.concat([pd.DataFrame([study_id_row_genus]), abund_table_genus])
+            # Preprocess the abundance table
+            processed_abund_genus, processed_taxa_genus = preprocess_abund_table(abund_table_genus, phylum=False)
             
-            # Add the data from the current study to the merged DataFrame
-            merged_df_genus = pd.concat([merged_df_genus, abund_table_genus], axis=1)
-        
-        # Load metadata for the study
-        sample_metadata_df = load_study_data(studies_data, selected_study)
+            # Set the index to the Family_Genus column for both dataframes
+            processed_taxa_genus.set_index('Family_Genus', inplace=True)
+            processed_abund_genus.set_index(processed_taxa_genus.index, inplace=True)
+
+            # Add a row with the study ID for all samples 
+            study_id_row_genus = pd.Series(selected_study, index=processed_abund_genus.columns)
+            studies_per_sample.append(study_id_row_genus)
+
+            # Append the processed dataframes to the lists
+            abund_dfs_genus.append(processed_abund_genus)
+            taxa_dfs_genus.append(processed_taxa_genus)
+
+        # Load and process sample metadata
+        sample_metadata_df = load_sample_data(selected_study)
         if sample_metadata_df is not None:
-            # Add a column with the study ID for all samples 
             sample_metadata_df['study_id'] = selected_study
+            metadata_dfs.append(sample_metadata_df)
 
-            # Add the data from the current study to the merged DataFrame
-            merged_df_sample_metadata = pd.concat([merged_df_sample_metadata, sample_metadata_df], axis=0)
+    # Concatenate and aggregate phylum-level abundance data
+    if abund_dfs_phylum:
+        # Concatenate data from all studies, fill NaNs with 0, and convert to integers
+        merged_abund_df_phylum = pd.concat(abund_dfs_phylum, axis = 1)
+        merged_abund_df_phylum = merged_abund_df_phylum.fillna(0).astype(int)
 
-    # Fill NaN values with 0, transpose the DataFrames and expor them
-    if not merged_df_phylum.empty:
-        merged_df_phylum = merged_df_phylum.fillna(0).T.rename(columns={0: 'study_id'})
-        merged_df_phylum.index.name = 'assembly_run_ids'
-        merged_df_phylum.to_csv(f'Abundance_tables/{biome}_merged_all_abund_tables_phylum.csv')
+        # Move index to a column
+        merged_abund_df_phylum.reset_index(inplace=True)
 
-    if not merged_df_genus.empty:
-        merged_df_genus = merged_df_genus.fillna(0).T.rename(columns={0: 'study_id'})
-        merged_df_genus.index.name = 'assembly_run_ids'
-        merged_df_genus.to_csv(f'Abundance_tables/{biome}_merged_all_abund_tables_genus.csv')
-    
-    if not merged_df_sample_metadata.empty:
-        merged_df_sample_metadata.to_csv(f'Samples_metadata/{biome}_merged_samples_metadata.csv', index=False)
+        # Create a new index with OTU IDs
+        otu_index = ['OTU' + str(i+1) for i in range(len(merged_abund_df_phylum))]
+        merged_abund_df_phylum.index = otu_index
+        merged_abund_df_phylum.index.name = 'OTU'
 
-#%%
-# Reset index of merged_df_genus
-merged_df_genus_biplot = merged_df_genus.reset_index()
-merged_df_genus_biplot = merged_df_genus_biplot.drop(columns=['index'])
-bc_pcoa_genus.samples = bc_pcoa_genus.samples.reset_index()
-bc_pcoa_genus.samples = bc_pcoa_genus.samples.drop(columns=['index'])
+        # Save the DataFrame to a csv file
+        merged_abund_df_phylum.to_csv(f'Abundance_tables/Merged_tables/{biome}/{biome}_merged_abund_tables_phylum.csv')
 
-# Compute the projection of descriptors into a PCoA matrix
-bc_pcoa_biplot = pcoa_biplot(bc_pcoa_genus, merged_df_genus_biplot)
+    # Concatenate and aggregate genus-level abundance data
+    if abund_dfs_genus:
+        # Concatenate data from all studies, fill NaNs with 0, and convert to integers
+        merged_abund_df_genus = pd.concat(abund_dfs_genus, axis = 1)
+        merged_abund_df_genus = merged_abund_df_genus.fillna(0).astype(int)
 
-# Extract biplot scores for features
-biplot_scores = bc_pcoa_biplot.features
+        # Create a new index with OTU IDs
+        otu_index = ['OTU' + str(i+1) for i in range(len(merged_abund_df_genus))]
+        merged_abund_df_genus.index = otu_index
+        merged_abund_df_genus.index.name = 'OTU'
 
-st.write(biplot_scores)
+        # Save the DataFrame to a csv file
+        merged_abund_df_genus.to_csv(f'Abundance_tables/Merged_tables/{biome}/{biome}_merged_abund_tables_genus.csv')
 
-# Calculate the magnitude of loadings for each species
-biplot_scores['Magnitude'] = np.sqrt(biplot_scores['PC1']**2 + biplot_scores['PC2']**2)
+        # Concatenate the study IDs for each sample
+        studies_per_sample_genus_df = pd.concat(studies_per_sample, axis=0)
 
-# Sort the species based on the magnitude and select the top 5
-top5_species = biplot_scores.nlargest(5, 'Magnitude')
+        # Reset the index and rename the columns
+        studies_per_sample_genus_df = studies_per_sample_genus_df.reset_index()
+        studies_per_sample_genus_df.columns = ['assembly_run_ids', 'study_id']
 
-# Create a color map for your categories
-category_colors = px.colors.qualitative.Dark24
-color_map = {category: category_colors[i % len(category_colors)] 
-             for i, category in enumerate(bc_pcoa_genus_data[update_figure(color_option)].unique())}
+        # Save the DataFrame to a csv file
+        studies_per_sample_genus_df.to_csv(f'Abundance_tables/Merged_tables/{biome}/{biome}_studies_per_sample.csv', index=False)
 
-# Map your categories to colors
-mapped_colors = bc_pcoa_genus_data[update_figure(color_option)].map(color_map)
+    # Concatenate and deduplicate phylum-level taxonomic data
+    if taxa_dfs_phylum:
+        merged_taxa_df_phylum = pd.concat(taxa_dfs_phylum, axis=1)
 
-# Create a new figure and add scatter points for the PCoA data
-fig = go.Figure()
+        # Identify duplicated column names
+        duplicated_columns = merged_taxa_df_phylum.columns[merged_taxa_df_phylum.columns.duplicated()]
 
-# Add the original scatter points from the PCoA data
-fig.add_trace(go.Scatter(
-    x=bc_pcoa_genus_data['PC1'],
-    y=bc_pcoa_genus_data['PC2'],
-    mode='markers',
-    marker=dict(color=mapped_colors, size=6),
-    text=bc_pcoa_genus_data['study_id'],  # hover text
-    hoverinfo='text'
-))
+        # Create a dictionary to hold the consensus columns
+        consensus_columns_phylum = {}
+                
+        # Create a consensus column for each duplicated column and store it in the dictionary
+        for column in duplicated_columns.unique():
+            consensus_columns_phylum[column + '_consensus'] = create_consensus_column(merged_taxa_df_phylum, column)
 
-# Add arrows for top 5 species
-for species in top5_species.index:
-    fig.add_trace(go.Scatter(
-        x=[0, top5_species.loc[species, 'PC1']], 
-        y=[0, top5_species.loc[species, 'PC2']],
-        mode='lines+markers+text',
-        text=[None, species],
-        textposition="top center",
-        line=dict(color='green', width=2),
-        showlegend=False
-    ))
+        # Convert the dictionary to a DataFrame and concatenate it with the original DataFrame
+        consensus_df = pd.DataFrame(consensus_columns_phylum)
+        merged_taxa_df_phylum = pd.concat([merged_taxa_df_phylum, consensus_df], axis=1)
 
-# Update layout with titles and axis labels
-fig.update_layout(
-    title=f'PCoA plot (Bray Curtis distance) of the analyses from all studies at Genus level',
-    xaxis=dict(title=f'PCo1 ({explained_var_ratio[0]:.2%})'),
-    yaxis=dict(title=f'PCo2 ({explained_var_ratio[1]:.2%})'),
-    legend_title=dict(text=color_option)
-)
+        # Drop the original duplicated columns
+        merged_taxa_df_phylum = merged_taxa_df_phylum.drop(columns=duplicated_columns)
 
-# Show the plot in Streamlit
-st.plotly_chart(fig, use_container_width=True)
+        # Remove '_consensus' from the column names
+        merged_taxa_df_phylum.columns = [col.replace('_consensus', '') for col in merged_taxa_df_phylum.columns]
+
+        # Move index to a column
+        merged_taxa_df_phylum.reset_index(inplace=True)
+        
+        # Create a new index with OTU IDs
+        otu_index = ['OTU' + str(i+1) for i in range(len(merged_taxa_df_phylum))]
+        merged_taxa_df_phylum.index = otu_index
+        merged_taxa_df_phylum.index.name = 'OTU'
+
+        # Save the DataFrame to a csv file
+        merged_taxa_df_phylum.to_csv(f'Abundance_tables/Merged_tables/{biome}/{biome}_merged_taxa_tables_phylum.csv')
+
+    # Concatenate and deduplicate genus-level taxonomic data
+    if taxa_dfs_genus:
+        merged_taxa_df_genus = pd.concat(taxa_dfs_genus, axis=1)
+
+        # Identify duplicated column names
+        duplicated_columns = merged_taxa_df_genus.columns[merged_taxa_df_genus.columns.duplicated()]
+
+        # Create a dictionary to hold the consensus columns
+        consensus_columns_genus = {}
+                
+        # Create a consensus column for each duplicated column and store it in the dictionary
+        for column in duplicated_columns.unique():
+            consensus_columns_genus[column + '_consensus'] = create_consensus_column(merged_taxa_df_genus, column)
+
+        # Convert the dictionary to a DataFrame and concatenate it with the original DataFrame
+        consensus_df = pd.DataFrame(consensus_columns_genus)
+        merged_taxa_df_genus = pd.concat([merged_taxa_df_genus, consensus_df], axis=1)
+
+        # Drop the original duplicated columns
+        merged_taxa_df_genus = merged_taxa_df_genus.drop(columns=duplicated_columns)
+
+        # Remove '_consensus' from the column names
+        merged_taxa_df_genus.columns = [col.replace('_consensus', '') for col in merged_taxa_df_genus.columns]
+
+        # Create a new index with OTU IDs
+        otu_index = ['OTU' + str(i+1) for i in range(len(merged_taxa_df_genus))]
+        merged_taxa_df_genus.index = otu_index
+        merged_taxa_df_genus.index.name = 'OTU'
+
+        # Save the DataFrame to a csv file
+        merged_taxa_df_genus.to_csv(f'Abundance_tables/Merged_tables/{biome}/{biome}_merged_taxa_tables_genus.csv')
+
+    # Concatenate sample metadata
+    if metadata_dfs:
+        merged_metadata_df = pd.concat(metadata_dfs)
+        merged_metadata_df.to_csv(f'Samples_metadata/Merged_tables/{biome}_merged_samples_metadata.csv', index=False)
+
+# %%

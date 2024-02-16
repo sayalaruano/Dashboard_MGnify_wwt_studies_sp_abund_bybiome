@@ -72,7 +72,7 @@ def preprocess_abund_table(abund_table, phylum):
     else:
         # Delete extra taxonomic columns
         # Check available taxonomic levels and drop the corresponding columns
-        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Species']
+        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Family_Genus']
         for level in taxonomic_levels:
             if level in abund_table.columns:
                 abund_table = abund_table.drop(columns=level)

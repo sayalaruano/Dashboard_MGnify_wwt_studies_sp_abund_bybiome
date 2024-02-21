@@ -107,9 +107,77 @@ pie_plot_biomes.update_traces(
 
 st.plotly_chart(pie_plot_biomes, use_container_width=True)
 
-# Get the unique biomes removeing nan values
+# Get the unique biomes removing nan values
 biomes = st.session_state.studies_data["biomes"].unique()
 biomes = [b for b in biomes if str(b) != 'nan']
+
+# Create a stacked bar plot for the top 5 genera by biome
+st.subheader("Top 5 genera by biome")
+
+# Load the merged abundance and taxonomic data
+abund_df_genus_wwt = pd.read_csv(f"Abundance_tables/Merged_tables/Wastewater/Wastewater_merged_abund_tables_genus.csv", index_col=0)
+tax_df_genus_wwt = pd.read_csv(f"Abundance_tables/Merged_tables/Wastewater/Wastewater_merged_taxa_tables_genus.csv", index_col=0)
+abund_df_genus_wwt_ws = pd.read_csv(f"Abundance_tables/Merged_tables/Wastewater_Water_and_sludge/Wastewater_Water_and_sludge_merged_abund_tables_genus.csv", index_col=0)
+tax_df_genus_wwt_ws = pd.read_csv(f"Abundance_tables/Merged_tables/Wastewater_Water_and_sludge/Wastewater_Water_and_sludge_merged_taxa_tables_genus.csv", index_col=0)
+abund_df_genus_wwt_ind = pd.read_csv(f"Abundance_tables/Merged_tables/Wastewater_Industrial_wastewater/Wastewater_Industrial_wastewater_merged_abund_tables_genus.csv", index_col=0)
+tax_df_genus_wwt_ind = pd.read_csv(f"Abundance_tables/Merged_tables/Wastewater_Industrial_wastewater/Wastewater_Industrial_wastewater_merged_taxa_tables_genus.csv", index_col=0)
+abund_df_genus_wwt_as = pd.read_csv(f"Abundance_tables/Merged_tables/Wastewater_Activated_Sludge/Wastewater_Activated_Sludge_merged_abund_tables_genus.csv", index_col=0)
+tax_df_genus_wwt_as = pd.read_csv(f"Abundance_tables/Merged_tables/Wastewater_Activated_Sludge/Wastewater_Activated_Sludge_merged_taxa_tables_genus.csv", index_col=0)
+
+# Initialize an empty DataFrame for the top 5 genera data
+top_genera_df_all_biomes = pd.DataFrame()
+
+# List of biome dataframes and their names
+abund_dfs = [abund_df_genus_wwt, abund_df_genus_wwt_ws, abund_df_genus_wwt_ind, abund_df_genus_wwt_as]
+tax_dfs = [tax_df_genus_wwt, tax_df_genus_wwt_ws, tax_df_genus_wwt_ind, tax_df_genus_wwt_as]
+biome_names = ['Wastewater', 'Water and sludge', 'Industrial wastewater', 'Activated sludge']
+
+# Process each biome
+for abund_df, tax_df, biome_name in zip(abund_dfs, tax_dfs, biome_names):
+    # Merge the abundance and taxonomy dataframes by index
+    abund_tax_merged = abund_df.merge(tax_df, left_index=True, right_index=True)
+    abund_tax_merged.index = abund_tax_merged['Genus']
+    abund_tax_merged.drop(columns=['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus'], inplace=True)
+    abund_tax_merged_transp = abund_tax_merged.T
+
+    # Calculate top 5 genera
+    top_genera = abund_tax_merged_transp.sum().nlargest(5)
+    total_abundance = top_genera.sum()
+    top_genera_relative = (top_genera / total_abundance) * 100
+
+    temp_df = pd.DataFrame({
+        'Biome': biome_name,
+        'Genus': top_genera_relative.index,
+        'Relative Abundance': top_genera_relative.values
+    })
+    top_genera_df_all_biomes = pd.concat([top_genera_df_all_biomes, temp_df])
+
+# Create a stacked bar chart for the top 5 genera in each biome
+top_genera_plot_biome = px.bar(top_genera_df_all_biomes, x='Biome', y='Relative Abundance', color='Genus',
+             category_orders={"Genus": top_genera_df_all_biomes['Genus'].unique()}, opacity=0.8,
+             color_discrete_sequence=px.colors.qualitative.Dark24)
+
+# Update layout (similar to your existing code, but adjust titles and labels accordingly)
+top_genera_plot_biome.update_layout(
+    margin=dict(l=40, r=40, t=40, b=40),
+    xaxis=dict(
+        title='Biome',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    yaxis=dict(
+        title='Relative abundance (%)',
+        tickfont=dict(size=18),
+        titlefont=dict(size=20),
+        showgrid=False
+    ),
+    legend_title=dict(font=dict(size=24)),
+    legend=dict(font=dict(size=20))
+)
+
+# Show the plot
+st.plotly_chart(top_genera_plot_biome, use_container_width=True)
 
 # Selectbox to choose a biome
 st.subheader("Select a biome to create the plots")
@@ -117,6 +185,30 @@ biome = st.selectbox("Biome:", biomes)
 
 # Replace the ":" and " " characters by "_" in the biome name
 biome = biome.replace(":", "_").replace(" ", "_")
+
+# Load the merged sample data for the selected biome
+sample_info = pd.read_csv(f"Samples_metadata/Merged_tables/{biome}_merged_samples_metadata.csv")
+
+# Display sample information for the selected study
+st.subheader("Sample Information")
+
+builder = GridOptionsBuilder.from_dataframe(sample_info)
+builder.configure_default_column(editable=True, groupable=True)
+builder.configure_side_bar(filters_panel = True, columns_panel = True)
+builder.configure_selection(selection_mode="multiple")
+builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=15)
+go = builder.build()
+
+AgGrid(sample_info, gridOptions=go)
+
+# Button to download the data
+sample_info_csv = convert_df(sample_info)
+st.download_button(
+    label="Download sample data as CSV",
+    data=sample_info_csv,
+    file_name=f'sample_info_{biome}.csv',
+    mime='text/csv',
+)
 
 # Create PCoA plots for all studies at genus level
 # Load the merged abundance and sample data
@@ -128,6 +220,32 @@ study_ids = pd.read_csv(f"Abundance_tables/Merged_tables/{biome}/{biome}_studies
 # Transpose the DataFrame
 abund_df_genus_transp = abund_df_genus.T
 tax_df_genus_transp = tax_df_genus.T
+
+# Reshape the abundance table
+abund_df_reshaped = abund_df_genus.reset_index().melt(id_vars='OTU', var_name='assembly_run_ids', value_name='count')
+
+# Split the multiple IDs in the assembly_run_ids column of df1
+sample_info['assembly_run_ids'] = sample_info['assembly_run_ids'].str.split(';')
+
+# Explode the dataframe based on the assembly_run_ids column
+sample_info_exploded = sample_info.explode('assembly_run_ids')
+
+# Merge dataframes on the 'assembly_run_ids' column
+samples_df = pd.merge(sample_info_exploded, abund_df_reshaped, left_on='assembly_run_ids', right_on='assembly_run_ids')
+
+# Filter the merged df to keep unique rows based on the assembly_run_ids column
+samples_df = samples_df.drop_duplicates(subset=['assembly_run_ids'])
+
+# Filter the merged df to keep only the relevant columns
+samples_df = samples_df[['assembly_run_ids', 'sample_id', 'biome_feature', 'biome_material']].reset_index(drop=True)
+
+# Combine biome_feature and biome_material columns if there is info on the columns, otherwise add 'NA'
+samples_df['biome_feature'] = samples_df['biome_feature'].fillna('NA')
+samples_df['biome_material'] = samples_df['biome_material'].fillna('NA')
+samples_df['biome'] = samples_df['biome_feature'] + ' - ' + samples_df['biome_material']
+
+# Sort df by assembly_run_ids
+samples_df = samples_df.sort_values(by=['assembly_run_ids']).reset_index(drop=True)
 
 # Extract analyses names as numpy arrays
 analyses_names = list(abund_df_genus_transp.index.values)
@@ -150,14 +268,20 @@ bc_pcoa_genus_data = pd.DataFrame(data = bc_pcoa_genus.samples, columns = ['PC1'
 # Reset index
 bc_pcoa_genus_data = bc_pcoa_genus_data.reset_index(drop=True)
 
+# Add specific biome column to the PCoA df
+bc_pcoa_genus_data['specific_biome'] = samples_df['biome']
+
 # Add analyses names as index
 bc_pcoa_genus_data.index = abund_df_genus.columns
 
 # Add study_id column to the PCoA df
 bc_pcoa_genus_data['study_id'] = study_ids["study_id"]
 
-# Add biome column to the PCoA df
+# Add general biome column to the PCoA df
 bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'biomes']], on='study_id')
+
+# If specific biome is "NA - NA", replace it with the general biome
+bc_pcoa_genus_data['specific_biome'] = np.where(bc_pcoa_genus_data['specific_biome'] == 'NA - NA', bc_pcoa_genus_data['biomes'], bc_pcoa_genus_data['specific_biome'])
 
 # Add country column to the PCoA df
 bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'sampling_country']], on='study_id')
@@ -217,10 +341,10 @@ violin_plot_genus.update_layout(
 st.plotly_chart(violin_plot_genus, use_container_width=True)
 st.warning('Some studies have just a few samples, so they are not shown in this plot', icon="⚠️")
 
-# Create a boxplot to show the distribution of the distances within and between the studies
+# Create a barplot to show the top 5 genera per study
 st.subheader(f'Top 5 genera per study')
 
-# Merge the abund_df_genus_transp and tax_df_genus_transp by index
+# Merge the abund_df_genus and tax_df_genus by index
 abund_df_genus_merged = abund_df_genus.merge(tax_df_genus, left_index=True, right_index=True)
 
 # Set "Genus" column as index for the merged DataFrame
@@ -254,16 +378,17 @@ for study in abund_df_genus_merged_transp['study_id'].unique():
     })
     top_genera_df = pd.concat([top_genera_df, temp_df])
 
-# Create a stacked bar chart
-top_genera_plot = px.scatter(top_genera_df, x='Study', y='Relative Abundance', text='Genus', color = 'Study',
-             category_orders={"Genus": top_genera_df['Genus'].unique()}, opacity=0.8,
-             color_discrete_sequence=px.colors.qualitative.Dark24)
+# Generate a palette with many unique colors and convert the colorcet palette to HEX format
+palette_hex = ['#' + ''.join([f'{int(c*255):02x}' for c in rgb]) for rgb in cc.glasbey_bw_minc_20]
 
-# Adjust text label size and position
-for trace in top_genera_plot.data:
-    trace.textposition = 'middle center'
-    trace.marker.size = 7
-    trace.textfont = dict(size=16)  # Increase the text size
+# Select colors based on the unique values of the Genus column
+unique_values_top_genera = top_genera_df["Genus"].nunique()
+selected_palette_top_genera = palette_hex[:unique_values_top_genera]
+
+# Create a stacked bar chart for the top 5 genera
+top_genera_plot = px.bar(top_genera_df, x='Study', y='Relative Abundance', color = 'Genus',
+             category_orders={"Genus": top_genera_df['Genus'].unique()}, opacity=0.8,
+             color_discrete_sequence=selected_palette_top_genera)
 
 # Update layout to adjust the margin, if necessary, to ensure text is not cut off
 top_genera_plot.update_layout(
@@ -280,7 +405,8 @@ top_genera_plot.update_layout(
         titlefont=dict(size=20),
         showgrid=False
     ),
-    showlegend=False
+    legend_title=dict(font=dict(size=24)),
+    legend=dict(font=dict(size=20))
 )
 
 # Show the plot
@@ -305,9 +431,6 @@ st.download_button(
     mime='text/csv',
 )
 
-# Generate a palette with 35 unique colors and convert the colorcet palette to HEX format
-palette_hex = ['#' + ''.join([f'{int(c*255):02x}' for c in rgb]) for rgb in cc.glasbey_bw_minc_20]
-
 # Plot PCoA colored by biome
 st.subheader(f"PCoA plot (Bray Curtis distance) of the analyses from all studies at Genus level")
 
@@ -318,7 +441,7 @@ color_option = st.selectbox("Select a variable to color by:",
 # Create a function to update the figure
 def update_figure(selected_variable):
     if selected_variable == 'Biomes':
-        return 'biomes'
+        return 'specific_biome'
     elif selected_variable == 'Study ID and Biome':
         return 'study_id'
     elif selected_variable == 'Sampling country':
@@ -328,12 +451,12 @@ def update_figure(selected_variable):
 
 # Select colors based on the unique values of the selected variable
 color_var = update_figure(color_option)
-unique_values = bc_pcoa_genus_data[color_var].nunique()
-selected_palette = palette_hex[:unique_values]
+unique_values_pcoa = bc_pcoa_genus_data[color_var].nunique()
+selected_palette_pcoa = palette_hex[:unique_values_pcoa]
 
 # Make the plot
 pcoa_genus = px.scatter(bc_pcoa_genus_data, x='PC1', y='PC2', opacity=0.8, color=color_var,
-                            hover_data=['study_id'], color_discrete_sequence=selected_palette)
+                            hover_data=['study_id'], color_discrete_sequence=selected_palette_pcoa)
 
 # Add title and axis labels
 pcoa_genus.update_traces(

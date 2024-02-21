@@ -224,12 +224,12 @@ st.download_button(
 # Add condition to check if the study has more than one sample
 if len(sample_info) > 2:
 
-    # Reshape abundance df so that the assembly_run_ids become a column, considering the phylum ir genus column is the index
+    # Reshape abundance df so that the assembly_run_ids become a column, considering the phylum or genus column as the index
     if tax_rank == 'Phylum':
         abund_df_reshaped = abund_table.reset_index().melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
     else:  # Genus
         abund_df_reshaped = abund_table.reset_index().melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
-
+    
     # Split the multiple IDs in the assembly_run_ids column of df1
     sample_info['assembly_run_ids'] = sample_info['assembly_run_ids'].str.split(';')
 

@@ -3,3 +3,4 @@ pyproject.toml
 Test_script.py
 Mgnify_studies_wwt_shot_metag_assembly.csv
 move_folders.sh
+.python-version

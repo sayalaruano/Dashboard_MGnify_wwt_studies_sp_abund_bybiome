@@ -214,7 +214,6 @@ st.download_button(
 # Load the merged abundance and sample data
 abund_df_genus = pd.read_csv(f"Abundance_tables/Merged_tables/{biome}/{biome}_merged_abund_tables_genus.csv", index_col=0)
 tax_df_genus = pd.read_csv(f"Abundance_tables/Merged_tables/{biome}/{biome}_merged_taxa_tables_genus.csv", index_col=0)
-sample_df_genus = pd.read_csv(f"Samples_metadata/Merged_tables/{biome}_merged_samples_metadata.csv", index_col=0)
 study_ids = pd.read_csv(f"Abundance_tables/Merged_tables/{biome}/{biome}_studies_per_sample.csv", index_col=0)
 
 # Transpose the DataFrame
@@ -288,6 +287,15 @@ bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['st
 
 # Add type of data column to the PCoA df
 bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'experiment_type']], on='study_id')
+
+# Add pipeline version column to the PCoA df
+bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'pipeline_version']], on='study_id')
+
+# Change the pipeline version to a string column
+bc_pcoa_genus_data['pipeline_version'] = bc_pcoa_genus_data['pipeline_version'].astype(str)
+
+# Add sequecing platform column to the PCoA df
+bc_pcoa_genus_data = bc_pcoa_genus_data.merge(st.session_state.studies_data[['study_id', 'instrument_platform']], on='study_id')
 
 # Add biome in the study id column
 bc_pcoa_genus_data['study_id'] = bc_pcoa_genus_data['study_id'].str.cat(bc_pcoa_genus_data['biomes'], sep=' - ')
@@ -436,7 +444,8 @@ st.subheader(f"PCoA plot (Bray Curtis distance) of the analyses from all studies
 
 # Dropdown menu for selecting the color variable
 color_option = st.selectbox("Select a variable to color by:", 
-                            ('Biomes', 'Study ID and Biome', 'Sampling country', 'Data type'))
+                            ('Biomes', 'Study ID and Biome', 'Sampling country', 'Data type',
+                             'MGnify pipeline', 'Sequencing platform'))
 
 # Create a function to update the figure
 def update_figure(selected_variable):
@@ -448,6 +457,10 @@ def update_figure(selected_variable):
         return 'sampling_country'
     elif selected_variable == 'Data type':
         return 'experiment_type'
+    elif selected_variable == 'MGnify pipeline':
+        return 'pipeline_version'
+    elif selected_variable == 'Sequencing platform':
+        return 'instrument_platform'
 
 # Select colors based on the unique values of the selected variable
 color_var = update_figure(color_option)
@@ -480,6 +493,34 @@ pcoa_genus.update_traces(
 
 # Show the plot
 st.plotly_chart(pcoa_genus, use_container_width=True)
+
+# Display merged abundance data
+st.subheader(f'Abundance table for the {biome} biome')
+
+# Reset the index to make it a column
+abund_table_with_index = abund_df_genus_merged.reset_index()
+
+# Ensure the index column is the first one
+column_order = ["Genus"] + [col for col in abund_table_with_index.columns if col != "Genus"]
+abund_table_with_index = abund_table_with_index[column_order]
+
+builder = GridOptionsBuilder.from_dataframe(abund_table_with_index)
+builder.configure_default_column(editable=True, groupable=True)
+builder.configure_side_bar(filters_panel = True, columns_panel = True)
+builder.configure_selection(selection_mode="multiple")
+builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
+go = builder.build()
+
+AgGrid(abund_table_with_index, gridOptions=go)
+
+# Button to download the data
+abund_table_csv = convert_df(abund_table_with_index)
+st.download_button(
+    label=f"Download abundance data as CSV",
+    data=abund_table_csv,
+    file_name=f'abund_table_{biome}.csv',
+    mime='text/csv',
+)
 
 # Add info on the sidebar
 st.sidebar.header('Data')

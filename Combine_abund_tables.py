@@ -76,6 +76,42 @@ def create_consensus_column(df, column_name):
 
     return consensus_column
 
+def update_taxname_for_conflicts(abund_table, tax_rank):
+    """
+    Update the tax_rank column in the abundance table to include higher_tax_rank values for entries with 
+    the same tax_rank but different higher_tax_rank.
+    The updated name is created by appending the higher taxonomic rank to the tax_rank name for conflicting entries.
+    Input: abund_table (DataFrame) - DataFrame with the abundance table for the study
+           tax_rank (str) - taxonomic rank to preprocess
+    Output: abund_table (DataFrame) - DataFrame with the abundance table for the study after updating the tax_rank column
+    """
+    # Find the index of the tax_rank column
+    tax_rank_index = abund_table.columns.get_loc(tax_rank)
+
+    # Get the higher taxonomic rank's name
+    higher_tax_rank = abund_table.columns[tax_rank_index - 1]
+
+    # Create a temporary column to check for conflicts without affecting the original tax_rank column
+    abund_table['temp_tax_rank'] = abund_table[tax_rank]
+    
+    # Group by the tax_rank and check for duplicates in the higher_tax_rank within each group
+    for tax_name, group in abund_table.groupby(tax_rank):
+        if len(group[higher_tax_rank].unique()) > 1:  # More than one unique higher_tax_rank for this tax_rank
+            # Update the temporary tax_rank column for these entries
+            abund_table.loc[group.index, 'temp_tax_rank'] = group[tax_rank] + '_' + group[higher_tax_rank].astype(str)
+
+    # Remove the duplicate rows based on higher_tax_rank and temp_tax_rank
+    abund_table.drop_duplicates(subset=[higher_tax_rank, 'temp_tax_rank'], keep='last', inplace=True)
+
+    # Replace the tax_rank column with the updated values from temp_tax_rank
+    abund_table[tax_rank] = abund_table['temp_tax_rank']
+    abund_table.drop(columns=['temp_tax_rank'], inplace=True)
+
+    # Replace "_nan" with empty string
+    abund_table[tax_rank] = abund_table[tax_rank].str.replace('_nan', '')
+
+    return abund_table
+
 # Separate the studies by their biomes
 # Load the summary table of all studies
 studies_data = pd.read_csv('wwt_studies_more_median_taxa_bybiome.csv')
@@ -270,6 +306,9 @@ for biome, study_ids in biome_dict.items():
         # Remove '_consensus' from the column names
         merged_taxa_df_genus.columns = [col.replace('_consensus', '') for col in merged_taxa_df_genus.columns]
 
+        # Apply function to update taxonomic names for conflicts
+        merged_taxa_df_genus = update_taxname_for_conflicts(merged_taxa_df_genus, 'Genus')
+
         # Create a new index with OTU IDs
         otu_index = ['OTU' + str(i+1) for i in range(len(merged_taxa_df_genus))]
         merged_taxa_df_genus.index = otu_index
@@ -282,5 +321,4 @@ for biome, study_ids in biome_dict.items():
     if metadata_dfs:
         merged_metadata_df = pd.concat(metadata_dfs)
         merged_metadata_df.to_csv(f'Samples_metadata/Merged_tables/{biome}_merged_samples_metadata.csv', index=False)
-
-# %%
+#%%

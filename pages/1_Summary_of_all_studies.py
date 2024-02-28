@@ -36,7 +36,7 @@ def convert_df(df):
 
 # Add a title and info about the app
 st.title('Summary and EDA of waste water treatment studies from Mgnify combined by biomes')
-st.header('Plots to summarize all studies')
+st.header('Plots to summarize all biomes')
 
 # Create plot the number of studies per study
 st.subheader("Number of samples per study")
@@ -55,7 +55,7 @@ hist_samples.update_layout(
 st.plotly_chart(hist_samples, use_container_width=True)
 
 # Create a pie plot for the sampling countries of the studies
-st.subheader("Sampling countries")
+st.subheader("Sampling countries for all studies")
 
 pie_plot_countries = px.pie(values=st.session_state.studies_data["sampling_country"].value_counts(),
                 names=st.session_state.studies_data["sampling_country"].value_counts().index, 
@@ -73,15 +73,16 @@ pie_plot_countries.update_traces(
 st.plotly_chart(pie_plot_countries, use_container_width=True)
 
 # Create bar plot for the data types of the studies
-st.subheader("Data types")
+st.subheader("Data types for all studies")
 
 bar_plot_dtypes = px.histogram(st.session_state.studies_data, x="experiment_type", opacity=0.8, 
-                               color='experiment_type', color_discrete_sequence=px.colors.qualitative.Plotly)
+                               color='biomes', color_discrete_sequence=px.colors.qualitative.Plotly)
 
 bar_plot_dtypes.update_layout(
-    xaxis=dict(title='Number of samples', tickfont=dict(size=18), titlefont=dict(size=20)),
+    xaxis=dict(title='Experiment type', tickfont=dict(size=18), titlefont=dict(size=20)),
     yaxis=dict(title='Number of studies', tickfont=dict(size=18), titlefont=dict(size=20)),
-    showlegend=False
+    legend_title=dict(text='Biome', font=dict(size=24)),
+    legend=dict(font=dict(size=20)),
     ).update_xaxes(
         showgrid=False
     ).update_yaxes(
@@ -90,21 +91,42 @@ bar_plot_dtypes.update_layout(
 st.plotly_chart(bar_plot_dtypes, use_container_width=True)
 
 # Create pie plot for the biomes of the studies
-st.subheader("Biomes")
+st.subheader("Number of studies and samples per biome")
 
-pie_plot_biomes = px.pie(values=st.session_state.studies_data["biomes"].value_counts(),
-                names=st.session_state.studies_data["biomes"].value_counts().index,
-                opacity=0.8, color_discrete_sequence=px.colors.qualitative.Plotly)
+# Calculate the number of studies per biome
+studies_per_biome = st.session_state.studies_data["biomes"].value_counts()
 
+# Calculate the total samples per biome and convert to integers
+samples_per_biome = st.session_state.studies_data.groupby('biomes')['n_samples'].sum().astype(int)
+
+# Creating a DataFrame for the pie chart
+pie_data = pd.DataFrame({
+    'Biome': studies_per_biome.index,
+    'Number of Studies': studies_per_biome.values,
+    'Total Samples': [samples_per_biome[biome] for biome in studies_per_biome.index]
+})
+
+# Creating a pie plot
+pie_plot_biomes = px.pie(
+    pie_data, 
+    names='Biome', 
+    values='Number of Studies', 
+    opacity=0.8, 
+    color_discrete_sequence=px.colors.qualitative.Plotly
+)
+
+# Customizing pie plot traces
 pie_plot_biomes.update_traces(
     textposition='inside',
-    textinfo='value',
-    insidetextfont=dict(size=18)
-    ).update_layout(
-        legend_title=dict(text='Biome', font=dict(size=24)),
-        legend=dict(font=dict(size=20))
-    )
+    text=[f'Studies: {st}<br>Samples: {sm}' for st, sm in zip(pie_data['Number of Studies'], pie_data['Total Samples'])],
+    insidetextfont=dict(size=18),
+    textinfo='text'  # Use only custom text
+).update_layout(
+    legend_title=dict(text='Biome', font=dict(size=24)),
+    legend=dict(font=dict(size=20))
+)
 
+# Display the plot
 st.plotly_chart(pie_plot_biomes, use_container_width=True)
 
 # Get the unique biomes removing nan values
@@ -444,7 +466,7 @@ st.subheader(f"PCoA plot (Bray Curtis distance) of the analyses from all studies
 
 # Dropdown menu for selecting the color variable
 color_option = st.selectbox("Select a variable to color by:", 
-                            ('Biomes', 'Study ID and Biome', 'Sampling country', 'Data type',
+                            ('Biomes', 'Study ID and Biome', 'Sampling country', 'Experiment type',
                              'MGnify pipeline', 'Sequencing platform'))
 
 # Create a function to update the figure
@@ -455,7 +477,7 @@ def update_figure(selected_variable):
         return 'study_id'
     elif selected_variable == 'Sampling country':
         return 'sampling_country'
-    elif selected_variable == 'Data type':
+    elif selected_variable == 'Experiment type':
         return 'experiment_type'
     elif selected_variable == 'MGnify pipeline':
         return 'pipeline_version'

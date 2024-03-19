@@ -123,7 +123,6 @@ studies_data = studies_data.dropna(how='all')
 wwt_studies_allsamples_list = studies_data["study_id"].tolist()
 
 # Remove nan values from the list
-# wwt_studies_more10samples_list = [x for x in wwt_studies_more10samples_list if str(x) != 'nan']
 wwt_studies_allsamples_list = [x for x in wwt_studies_allsamples_list if str(x) != 'nan']
 
 # Count the number of studies per biome
@@ -157,6 +156,14 @@ biome_dict = {biome.replace("root:Engineered:", ""): study_ids for biome, study_
 
 # Replace ":" and speaces with "_" in the biome names
 biome_dict = {biome.replace(":", "_").replace(" ", "_"): study_ids for biome, study_ids in biome_dict.items()}
+
+# Initialize global lists
+global_abund_dfs_phylum = []
+global_abund_dfs_genus = []
+global_taxa_dfs_phylum = []
+global_taxa_dfs_genus = []
+global_metadata_dfs = []
+global_studies_per_sample = []
 
 # Process and merge data for each biome
 for biome, study_ids in biome_dict.items():
@@ -321,4 +328,61 @@ for biome, study_ids in biome_dict.items():
     if metadata_dfs:
         merged_metadata_df = pd.concat(metadata_dfs)
         merged_metadata_df.to_csv(f'Samples_metadata/Merged_tables/{biome}_merged_samples_metadata.csv', index=False)
+
+    # Append the biome-specific data to the global lists
+    global_abund_dfs_phylum.extend(abund_dfs_phylum)
+    global_abund_dfs_genus.extend(abund_dfs_genus)
+    global_taxa_dfs_phylum.extend(taxa_dfs_phylum)
+    global_taxa_dfs_genus.extend(taxa_dfs_genus)
+    global_metadata_dfs.extend(metadata_dfs)
+    global_studies_per_sample.extend(studies_per_sample)
+
+
+# Concatenate and aggregate phylum-level abundance data for all biomes
+if global_abund_dfs_phylum:
+    merged_global_abund_df_phylum = pd.concat(global_abund_dfs_phylum, axis=1)
+    merged_global_abund_df_phylum = merged_global_abund_df_phylum.fillna(0).astype(int)
+    otu_index = ['OTU' + str(i+1) for i in range(len(merged_global_abund_df_phylum))]
+    merged_global_abund_df_phylum.index = otu_index
+    merged_global_abund_df_phylum.index.name = 'OTU'
+    merged_global_abund_df_phylum.reset_index(inplace=True)
+    merged_global_abund_df_phylum.to_csv('Abundance_tables/Merged_tables/All_biomes/all_biomes_merged_abund_tables_phylum.csv', index=False)
+
+# Concatenate and aggregate genus-level abundance data for all biomes
+if global_abund_dfs_genus:
+    merged_global_abund_df_genus = pd.concat(global_abund_dfs_genus, axis=1)
+    merged_global_abund_df_genus = merged_global_abund_df_genus.fillna(0).astype(int)
+    otu_index = ['OTU' + str(i+1) for i in range(len(merged_global_abund_df_genus))]
+    merged_global_abund_df_genus.index = otu_index
+    merged_global_abund_df_genus.index.name = 'OTU'
+    merged_global_abund_df_genus.reset_index(inplace=True)
+    merged_global_abund_df_genus.to_csv('Abundance_tables/Merged_tables/All_biomes/all_biomes_merged_abund_tables_genus.csv', index=False)
+
+# Concatenate and deduplicate phylum-level taxonomic data for all biomes
+if global_taxa_dfs_phylum:
+    merged_global_taxa_df_phylum = pd.concat(global_taxa_dfs_phylum).drop_duplicates()
+    merged_global_taxa_df_phylum.reset_index(inplace=True, drop=True)
+    merged_global_taxa_df_phylum.to_csv('Abundance_tables/Merged_tables/All_biomes/all_biomes_merged_taxa_tables_phylum.csv', index=False)
+
+# Concatenate and deduplicate genus-level taxonomic data for all biomes
+if global_taxa_dfs_genus:
+    merged_global_taxa_df_genus = pd.concat(global_taxa_dfs_genus).drop_duplicates()
+    merged_global_taxa_df_genus.reset_index(inplace=True, drop=True)
+    merged_global_taxa_df_genus.to_csv('Abundance_tables/Merged_tables/All_biomes/all_biomes_merged_taxa_tables_genus.csv', index=False)
+
+# Concatenate sample metadata for all biomes
+if global_metadata_dfs:
+    merged_global_metadata_df = pd.concat(global_metadata_dfs).drop_duplicates()
+    merged_global_metadata_df.reset_index(inplace=True, drop=True)
+    merged_global_metadata_df.to_csv('Samples_metadata/Merged_tables/all_biomes_merged_samples_metadata.csv', index=False)
+
+# Concatenate the studies per sample data for all biomes
+if global_studies_per_sample:
+    # Concatenate all study_id_row_genus DataFrames
+    merged_global_studies_per_sample_df = pd.concat(global_studies_per_sample, axis=0)
+
+    # Reset the index and rename the columns
+    merged_global_studies_per_sample_df = merged_global_studies_per_sample_df.reset_index()
+    merged_global_studies_per_sample_df.columns = ['assembly_run_ids', 'study_id']
+    merged_global_studies_per_sample_df.to_csv('Abundance_tables/Merged_tables/All_biomes/all_biomes_studies_per_sample.csv', index=False)
 #%%

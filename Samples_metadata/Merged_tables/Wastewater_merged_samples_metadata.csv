@@ -1,12 +1,4 @@
 sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids,study_id
-ERS3742478,CP6,SAMEA5953998,hospital wastewater metagenome,,,,,,,ERZ1505396,MGYS00005614
-ERS3742481,Seafield,SAMEA5954001,wastewater treatment plant inflow metagenome,,,,,,,ERZ1505397,MGYS00005614
-ERS3742476,CP4,SAMEA5953996,hospital wastewater metagenome,,,,,,,ERZ1505398,MGYS00005614
-ERS3742477,CP5,SAMEA5953997,hospital wastewater metagenome,,,,,,,ERZ1505399,MGYS00005614
-ERS3742475,CP3,SAMEA5953995,hospital wastewater metagenome,,,,,,,ERZ1505401,MGYS00005614
-ERS3742480,CP8,SAMEA5954000,hospital wastewater metagenome,,,,,,,ERZ1505400,MGYS00005614
-ERS3742474,CP1,SAMEA5953994,hospital wastewater metagenome,,,,,,,ERZ1505402,MGYS00005614
-ERS3742479,CP7,SAMEA5953999,hospital wastewater metagenome,,,,,,,ERZ1505403,MGYS00005614
 ERS2597319,DTU2017_MG_100_EC_GA,SAMEA4777371,DTU2017_MG_100_EC_GA,-0.908,-89.6029,Ecuador,,,,ERR2683114,MGYS00003139
 ERS2597320,DTU2017_MG_101_MW_KA,SAMEA4777372,DTU2017_MG_101_MW_KA,-13.051,33.8039,Malawi,,,,ERR2683115,MGYS00003139
 ERS2597323,DTU2017_MG_104_MW_BL,SAMEA4777375,DTU2017_MG_104_MW_BL,-15.4703,35.02,Malawi,,,,ERR2683118,MGYS00003139
@@ -190,10 +182,6 @@ ERS2597500,DTU2017_MG_181_NC_M,SAMEA4777552,extraction_control,66.9425,-53.6531,
 ERS2597501,DTU2017_MG_182_NC_N,SAMEA4777553,extraction_control,66.9425,-53.6531,Denmark,,,,ERR2683538,MGYS00003139
 ,,,,,,,,,,,MGYS00003139
 ERS3348413,KHAJOD1,SAMEA5546360,"Wastewater (or waste water) is any water that has been affected by human use. Wastewater is &quot;used water from any combination of domestic, industrial, commercial or agricultural activities, surface runoff or stormwater, and any sewer inflow or sewer infiltration&quot;.",21.1161,72.788,India,,,,ERR3258496,MGYS00004715
-SRS2384392,S2,SAMN07414803,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781412,MGYS00005016
-SRS2384393,S1,SAMN07414802,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781411,MGYS00005016
-SRS2384394,S3,SAMN07414804,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781410,MGYS00005016
-SRS2384395,S4,SAMN07414805,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781409,MGYS00005016
 SRS2278348,EF_VA,SAMN07190887,effluent of sewage treatment plant in Hong Hong,37.14,-80.41,"USA: Christiansburg, Virginia",,,,ERZ724506;ERZ724508;ERZ724509;ERZ724511;ERZ724530;ERZ724535;ERZ724547;ERZ724548;ERZ724555,MGYS00005035
 SRS2278349,IN_HK,SAMN07190885,influent of sewage treatment plant in Hong Hong,22.4,114.21,Hong Kong,,,,ERZ724502;ERZ724503;ERZ724515;ERZ724518;ERZ724531;ERZ724534;ERZ724540;ERZ724553;ERZ724558,MGYS00005035
 SRS2278350,AS_VA,SAMN07190886,activated sludge of sewage treatment plant in Hong Hong,37.14,-80.41,"USA: Christiansburg, Virginia",,,,ERZ724516;ERZ724517;ERZ724520;ERZ724527;ERZ724529;ERZ724533;ERZ724539;ERZ724546;ERZ724551;ERZ724556;ERZ724559,MGYS00005035
@@ -248,13 +236,10 @@ ERS2967411,FR.EFF_W73.READ2 Taxonomy ID:256318,SAMEA5159683,FR.EFF_W73.READ2 Tax
 ERS2967412,EM.EFF_W53.READ1 Taxonomy ID:256318,SAMEA5159684,EM.EFF_W53.READ1 Taxonomy ID:256318,46.8182,8.2275,Switzerland,aquatic biome,wastewater treatment plant,water,ERR2985276,MGYS00005058
 ERS2967413,TU.EFF_W69.READ1 Taxonomy ID:256318,SAMEA5159685,TU.EFF_W69.READ1 Taxonomy ID:256318,46.8182,8.2275,Switzerland,aquatic biome,wastewater treatment plant,water,ERR2985277,MGYS00005058
 ERS2967414,FR.EFF_W73.READ1 Taxonomy ID:256318,SAMEA5159686,FR.EFF_W73.READ1 Taxonomy ID:256318,46.8182,8.2275,Switzerland,aquatic biome,wastewater treatment plant,water,ERR2985278,MGYS00005058
-ERS1909451,Randers-0512A,SAMEA104284473,Metagenome-Randers-0512,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026792,MGYS00005431
-ERS1909454,Randers-0323B,SAMEA104284476,Metagenome-Randers-0323,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026805,MGYS00005431
-ERS1909452,Randers-0512B,SAMEA104284474,Metagenome-Randers-0512,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026796,MGYS00005431
-ERS1909453,Randers-0323A,SAMEA104284475,Metagenome-Randers-0323,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026800,MGYS00005431
-ERS1909455,Randers-0113,SAMEA104284477,Metagenome-Randers-0113,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026810,MGYS00005431
-ERS1909456,Randers-0321,SAMEA104284478,Metagenome-Randers-0321,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026814,MGYS00005431
 ERS223627,palm oil mill effluent (POME) metagenome,SAMEA2163750,palm oil mill effluent (POME) metagenome,2.0,101.0,Malaysia,palm oil mill effluent,closed biodigester,sludge,ERR276848,MGYS00001389
+ERS1545891,MP_reactors,SAMEA80832418,MP_reactors,50.9,4.7,Belgium,anaerobic reactor,mesophilic anaerobic reactor,wastewater,ERR1823510,MGYS00001453
+ERS1545892,MP_reactors,SAMEA80833168,MP_reactors,50.9,4.7,Belgium,anaerobic reactor,mesophilic anaerobic reactor,wastewater,ERR1823511,MGYS00001453
+ERS1545893,MP_reactors,SAMEA80833918,MP_reactors,50.9,4.7,Belgium,anaerobic reactor,mesophilic anaerobic reactor,wastewater,ERR1823512,MGYS00001453
 ERS1572689,Black Water Project,SAMEA100930918,Black Water,,,Netherlands,,,,ERR1857181,MGYS00001566
 ERS1572690,Black Water Project,SAMEA100931668,Black Water,,,Netherlands,,,,ERR1857182,MGYS00001566
 ERS1572691,Black Water Project,SAMEA100932418,Black Water,,,Netherlands,,,,ERR1857183,MGYS00001566
@@ -299,3 +284,4 @@ DRS034404,DRS034404,SAMD00056907,DRS034404,35.6693,139.4257,"Japan:Tokyo, Hachio
 DRS034405,DRS034405,SAMD00056908,DRS034405,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,biofilm,DRR066660,MGYS00001851
 ERS1833119,b2forensics1,SAMEA104174101,wastewater sample collected on november 1st 2016,48.698,2.1795,France,,,,ERR2041951,MGYS00001903
 ERS946133,AS95Spen15102014,SAMEA3638984,AS95Spen15102014,54.7149,-1.614,United Kingdom,Freshwater biome,Wastewater treatment plant,Sewage,ERR1101751,MGYS00000555
+ERS1048982,AOBNOB1,SAMEA3861848,AOBNOB1,,,Australia,Wastewater,Activated Sludge,Reactor,ERR1233629,MGYS00000606

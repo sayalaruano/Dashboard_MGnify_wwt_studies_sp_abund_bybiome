@@ -1,12 +1,4 @@
 sample_id,sample_name,biosample,sample_description,latitude,longitude,geolocation,biome,biome_feature,biome_material,assembly_run_ids,study_id
-ERS3742478,CP6,SAMEA5953998,hospital wastewater metagenome,,,,,,,ERZ1505396,MGYS00005614
-ERS3742481,Seafield,SAMEA5954001,wastewater treatment plant inflow metagenome,,,,,,,ERZ1505397,MGYS00005614
-ERS3742476,CP4,SAMEA5953996,hospital wastewater metagenome,,,,,,,ERZ1505398,MGYS00005614
-ERS3742477,CP5,SAMEA5953997,hospital wastewater metagenome,,,,,,,ERZ1505399,MGYS00005614
-ERS3742475,CP3,SAMEA5953995,hospital wastewater metagenome,,,,,,,ERZ1505401,MGYS00005614
-ERS3742480,CP8,SAMEA5954000,hospital wastewater metagenome,,,,,,,ERZ1505400,MGYS00005614
-ERS3742474,CP1,SAMEA5953994,hospital wastewater metagenome,,,,,,,ERZ1505402,MGYS00005614
-ERS3742479,CP7,SAMEA5953999,hospital wastewater metagenome,,,,,,,ERZ1505403,MGYS00005614
 ERS2597319,DTU2017_MG_100_EC_GA,SAMEA4777371,DTU2017_MG_100_EC_GA,-0.908,-89.6029,Ecuador,,,,ERR2683114,MGYS00003139
 ERS2597320,DTU2017_MG_101_MW_KA,SAMEA4777372,DTU2017_MG_101_MW_KA,-13.051,33.8039,Malawi,,,,ERR2683115,MGYS00003139
 ERS2597323,DTU2017_MG_104_MW_BL,SAMEA4777375,DTU2017_MG_104_MW_BL,-15.4703,35.02,Malawi,,,,ERR2683118,MGYS00003139
@@ -190,10 +182,6 @@ ERS2597500,DTU2017_MG_181_NC_M,SAMEA4777552,extraction_control,66.9425,-53.6531,
 ERS2597501,DTU2017_MG_182_NC_N,SAMEA4777553,extraction_control,66.9425,-53.6531,Denmark,,,,ERR2683538,MGYS00003139
 ,,,,,,,,,,,MGYS00003139
 ERS3348413,KHAJOD1,SAMEA5546360,"Wastewater (or waste water) is any water that has been affected by human use. Wastewater is &quot;used water from any combination of domestic, industrial, commercial or agricultural activities, surface runoff or stormwater, and any sewer inflow or sewer infiltration&quot;.",21.1161,72.788,India,,,,ERR3258496,MGYS00004715
-SRS2384392,S2,SAMN07414803,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781412,MGYS00005016
-SRS2384393,S1,SAMN07414802,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781411,MGYS00005016
-SRS2384394,S3,SAMN07414804,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781410,MGYS00005016
-SRS2384395,S4,SAMN07414805,This sample has been submitted by pda|dosanjos.karol07@gmail.com on 2017-08-02; wastewater metagenome,-15.0,-48.0,Brazil: Brasilia,,,,ERZ781409,MGYS00005016
 SRS2278348,EF_VA,SAMN07190887,effluent of sewage treatment plant in Hong Hong,37.14,-80.41,"USA: Christiansburg, Virginia",,,,ERZ724506;ERZ724508;ERZ724509;ERZ724511;ERZ724530;ERZ724535;ERZ724547;ERZ724548;ERZ724555,MGYS00005035
 SRS2278349,IN_HK,SAMN07190885,influent of sewage treatment plant in Hong Hong,22.4,114.21,Hong Kong,,,,ERZ724502;ERZ724503;ERZ724515;ERZ724518;ERZ724531;ERZ724534;ERZ724540;ERZ724553;ERZ724558,MGYS00005035
 SRS2278350,AS_VA,SAMN07190886,activated sludge of sewage treatment plant in Hong Hong,37.14,-80.41,"USA: Christiansburg, Virginia",,,,ERZ724516;ERZ724517;ERZ724520;ERZ724527;ERZ724529;ERZ724533;ERZ724539;ERZ724546;ERZ724551;ERZ724556;ERZ724559,MGYS00005035
@@ -248,13 +236,10 @@ ERS2967411,FR.EFF_W73.READ2 Taxonomy ID:256318,SAMEA5159683,FR.EFF_W73.READ2 Tax
 ERS2967412,EM.EFF_W53.READ1 Taxonomy ID:256318,SAMEA5159684,EM.EFF_W53.READ1 Taxonomy ID:256318,46.8182,8.2275,Switzerland,aquatic biome,wastewater treatment plant,water,ERR2985276,MGYS00005058
 ERS2967413,TU.EFF_W69.READ1 Taxonomy ID:256318,SAMEA5159685,TU.EFF_W69.READ1 Taxonomy ID:256318,46.8182,8.2275,Switzerland,aquatic biome,wastewater treatment plant,water,ERR2985277,MGYS00005058
 ERS2967414,FR.EFF_W73.READ1 Taxonomy ID:256318,SAMEA5159686,FR.EFF_W73.READ1 Taxonomy ID:256318,46.8182,8.2275,Switzerland,aquatic biome,wastewater treatment plant,water,ERR2985278,MGYS00005058
-ERS1909451,Randers-0512A,SAMEA104284473,Metagenome-Randers-0512,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026792,MGYS00005431
-ERS1909454,Randers-0323B,SAMEA104284476,Metagenome-Randers-0323,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026805,MGYS00005431
-ERS1909452,Randers-0512B,SAMEA104284474,Metagenome-Randers-0512,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026796,MGYS00005431
-ERS1909453,Randers-0323A,SAMEA104284475,Metagenome-Randers-0323,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026800,MGYS00005431
-ERS1909455,Randers-0113,SAMEA104284477,Metagenome-Randers-0113,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026810,MGYS00005431
-ERS1909456,Randers-0321,SAMEA104284478,Metagenome-Randers-0321,56.4697,10.0373,,Anaerobic digester  microbiome,mesophilic sludge digester,Anaerobic digester biomass,ERZ1026814,MGYS00005431
 ERS223627,palm oil mill effluent (POME) metagenome,SAMEA2163750,palm oil mill effluent (POME) metagenome,2.0,101.0,Malaysia,palm oil mill effluent,closed biodigester,sludge,ERR276848,MGYS00001389
+ERS1545891,MP_reactors,SAMEA80832418,MP_reactors,50.9,4.7,Belgium,anaerobic reactor,mesophilic anaerobic reactor,wastewater,ERR1823510,MGYS00001453
+ERS1545892,MP_reactors,SAMEA80833168,MP_reactors,50.9,4.7,Belgium,anaerobic reactor,mesophilic anaerobic reactor,wastewater,ERR1823511,MGYS00001453
+ERS1545893,MP_reactors,SAMEA80833918,MP_reactors,50.9,4.7,Belgium,anaerobic reactor,mesophilic anaerobic reactor,wastewater,ERR1823512,MGYS00001453
 ERS1572689,Black Water Project,SAMEA100930918,Black Water,,,Netherlands,,,,ERR1857181,MGYS00001566
 ERS1572690,Black Water Project,SAMEA100931668,Black Water,,,Netherlands,,,,ERR1857182,MGYS00001566
 ERS1572691,Black Water Project,SAMEA100932418,Black Water,,,Netherlands,,,,ERR1857183,MGYS00001566
@@ -299,6 +284,7 @@ DRS034404,DRS034404,SAMD00056907,DRS034404,35.6693,139.4257,"Japan:Tokyo, Hachio
 DRS034405,DRS034405,SAMD00056908,DRS034405,35.6693,139.4257,"Japan:Tokyo, Hachioji",,thermophilic anaerobic methanogenic reactor,biofilm,DRR066660,MGYS00001851
 ERS1833119,b2forensics1,SAMEA104174101,wastewater sample collected on november 1st 2016,48.698,2.1795,France,,,,ERR2041951,MGYS00001903
 ERS946133,AS95Spen15102014,SAMEA3638984,AS95Spen15102014,54.7149,-1.614,United Kingdom,Freshwater biome,Wastewater treatment plant,Sewage,ERR1101751,MGYS00000555
+ERS1048982,AOBNOB1,SAMEA3861848,AOBNOB1,,,Australia,Wastewater,Activated Sludge,Reactor,ERR1233629,MGYS00000606
 ERS2520896,CAN-22a_3,SAMEA4700727,"This sample has been submitted by Centre for Genomic Epidemiology, National Food Institute, Technical University of Denmark (DTU), Denmark on 2018-05-31; wastewater metagenome",51.0131,-114.0246,,,,,ERZ3455818,MGYS00005846
 ERS2520864,AUS-18_1,SAMEA4700695,"This sample has been submitted by Centre for Genomic Epidemiology, National Food Institute, Technical University of Denmark (DTU), Denmark on 2018-05-31; wastewater metagenome",-35.2464,148.9698,,,,,ERZ3455794,MGYS00005846
 ERS2520871,AUS-18a_4,SAMEA4700702,"This sample has been submitted by Centre for Genomic Epidemiology, National Food Institute, Technical University of Denmark (DTU), Denmark on 2018-05-31; wastewater metagenome",-37.9768,144.6383,,,,,ERZ3455798,MGYS00005846
@@ -580,54 +566,12 @@ ERS1230351,Danish sewage,SAMEA4059241,"Negative control for samples; 32, 51-53, 
 ERS1230352,Danish sewage,SAMEA4059242,"Negative control for samples; 32, 51-53, 55-56, 66, 87-93",55.6405,12.5058,Denmark,,,,ERR1513000,MGYS00001135
 ERS1230353,Danish sewage,SAMEA4059243,Danish sewage,55.6405,12.5058,Denmark,,,,ERR1513001,MGYS00001135
 ERS1243511,Danish sewage,SAMEA4072401,Danish sewage,55.695,12.615,Denmark,,,,ERR1525435,MGYS00001135
-SRS1791885,Gp0138790,SAMN05720209,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from China - AD_SCU002_MetaG,30.66,104.06,China,,,,ERZ1756056;OFEK01,MGYS00002316
-,,,,,,,,,,,MGYS00002316
-SRS1692508,Gp0138787,SAMN05720207,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Hong Kong - AD_UKC113_MetaG,22.28,114.17,Hong Kong,,,,ERZ724020,MGYS00003512
-SRS785545,AK-R06,SAMN03074211,Metagenome of activated biomass of a common effluent treatment plant treating industrial wastewater,21.15,79.09,India:Nagpur,Common Effluent Treatment Plant,Wastewater,Activated sludge,ERZ795017,MGYS00004898
-ERS805486,MBR Sludge,SAMEA3498337,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977407,MGYS00001392
-ERS805487,MBR Sludge,SAMEA3498338,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977409;ERR977408,MGYS00001392
-ERS805488,MBR Sludge,SAMEA3498339,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977410,MGYS00001392
-ERS805489,MBR Sludge,SAMEA3498340,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977423,MGYS00001392
-ERS805490,MBR Sludge,SAMEA3498341,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977424,MGYS00001392
-ERS805491,MBR Sludge,SAMEA3498342,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977425,MGYS00001392
-ERS805492,ENR4_A,SAMEA3498343,ENR4_A,43.3792,43.7239,Russia,oil well,oil well,biofilm material,ERR977403,MGYS00001392
-ERS805493,ENR4_E,SAMEA3498344,ENR4_E,43.3792,43.7239,Russia,oil well,oil well,biofilm material,ERR977404,MGYS00001392
-ERS805494,ENR4_F,SAMEA3498345,ENR4_F,43.3792,43.7239,Russia,oil well,oil well,biofilm material,ERR977405,MGYS00001392
-ERS805495,ENR6_N3,SAMEA3498346,ENR6_N3,43.3792,43.7239,Russia,oil well,oil well,biofilm material,ERR977406,MGYS00001392
-ERS805496,Vetmed_Pskit,SAMEA3498347,Vetmed_Pskit,48.2549,16.4293,Austria,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977411;ERR977413;ERR977412,MGYS00001392
-ERS805497,Vetmed_23,SAMEA3498348,Vetmed_23,48.2549,16.4293,Austria,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977415;ERR977416;ERR977414,MGYS00001392
-ERS805498,GWW_HP_F1,SAMEA3498349,GWW_HP_F1,52.1489,10.5428,Germany,water well,water well,biofilm material,ERR977417;ERR977419;ERR977418,MGYS00001392
-ERS805499,GWW_HP_D,SAMEA3498350,GWW_HP_D,52.1489,10.5428,Germany,water well,water well,biofilm material,ERR977421;ERR977420;ERR977422,MGYS00001392
-ERS1107870,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920736,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352952;ERR1352951,MGYS00000777
-ERS1107871,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920737,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352953;ERR1352954,MGYS00000777
-ERS1107872,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920738,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352955;ERR1352956,MGYS00000777
-ERS1107873,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920739,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352957;ERR1352958,MGYS00000777
-ERS1107874,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920740,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352959;ERR1352960,MGYS00000777
-ERS1107875,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920741,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352962;ERR1352961,MGYS00000777
-ERS1107846,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920712,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352903;ERR1352904,MGYS00000777
-ERS1107847,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920713,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352906;ERR1352905,MGYS00000777
-ERS1107848,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920714,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352907;ERR1352908,MGYS00000777
-ERS1107849,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920715,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352909;ERR1352910,MGYS00000777
-ERS1107860,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920726,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352932;ERR1352931,MGYS00000777
-ERS1107861,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920727,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352934;ERR1352933,MGYS00000777
-ERS1107862,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920728,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352935;ERR1352936,MGYS00000777
-ERS1107863,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920729,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352937;ERR1352938,MGYS00000777
-ERS1107864,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920730,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352940;ERR1352939,MGYS00000777
-ERS1107865,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920731,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352942;ERR1352941,MGYS00000777
-ERS1107866,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920732,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352944;ERR1352943,MGYS00000777
-ERS1107867,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920733,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352946;ERR1352945,MGYS00000777
-ERS1107850,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920716,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352911;ERR1352912,MGYS00000777
-ERS1107851,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920717,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352914;ERR1352913,MGYS00000777
-ERS1107858,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920724,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352928;ERR1352927,MGYS00000777
-ERS1107859,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920725,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352929;ERR1352930,MGYS00000777
-ERS1107868,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920734,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352948;ERR1352947,MGYS00000777
-ERS1107869,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920735,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352949;ERR1352950,MGYS00000777
-ERS1107852,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920718,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352915;ERR1352916,MGYS00000777
-ERS1107853,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920719,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352918;ERR1352917,MGYS00000777
-ERS1107854,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920720,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352920;ERR1352919,MGYS00000777
-ERS1107855,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920721,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352922;ERR1352921,MGYS00000777
-ERS1107856,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920722,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352924;ERR1352923,MGYS00000777
-ERS1107857,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920723,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352925;ERR1352926,MGYS00000777
+ERS632924,AAW-3-2012,SAMEA3180052,Aalborg West Q3 2012,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764620,MGYS00005802
+ERS632917,AAW-4-2010,SAMEA3180045,Aalborg West Q4 2010,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764613,MGYS00005802
+ERS632927,EJB-4-2011,SAMEA3180055,Ejby Moelle Q4 2011,55.3995,10.4148,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764614,MGYS00005802
+ERS632929,EGA-2-2011,SAMEA3180057,Egaa Q2 2011,56.2131,10.2425,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764618,MGYS00005802
+ERS632918,AAW-5-2010-A,SAMEA3180046,Aalborg West Q5 2010 A,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764622,MGYS00005802
+ERS632919,AAW-5-2010-B,SAMEA3180047,Aalborg West Q2 2010 B,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764624,MGYS00005802
 ERS2488841,CROATIA1,SAMEA4668225,Croatian wastewater treatment sludge,45.7897,16.0823,Croatia,Sludge,Wastewater treatment plant,sludge,ERR2586215,MGYS00002383
 ERS2488842,CROATIA2,SAMEA4668226,Croatian wastewater treatment sludge,45.7897,16.0823,Croatia,Sludge,Wastewater treatment plant,sludge,ERR2586216,MGYS00002383
 ERS2488843,CROATIA3,SAMEA4668227,Croatian wastewater treatment sludge,45.7897,16.0823,Croatia,Sludge,Wastewater treatment plant,sludge,ERR2586217,MGYS00002383
@@ -805,31 +749,37 @@ ERS1864888,Exp2_R4_SRT7,SAMEA104205870,A sequencing batch reactor operating with
 ERS1864889,Exp2_R5_SRT10,SAMEA104205871,A sequencing batch reactor operating with sludge originating from the Niderglatt WWTP was operated with a sludge retention time of 10 days. Samples were withdrawn after exposing the reactor to a set of micropollutants.,47.5005,8.4953,Switzerland,wastewater treatment plant,sewage,sludge,ERR2088994,MGYS00001910
 ERS1864890,Exp2_R6_SRT15,SAMEA104205872,A sequencing batch reactor operating with sludge originating from the Niderglatt WWTP was operated with a sludge retention time of 15 days. Samples were withdrawn after exposing the reactor to a set of micropollutants.,47.5005,8.4953,Switzerland,wastewater treatment plant,sewage,sludge,ERR2088995,MGYS00001910
 ,,,,,,,,,,,MGYS00001910
-SRS1693265,Gp0138823,SAMN05720194,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC048_MetaG,41.12,-87.64,USA,,,,ERZ761564,MGYS00003380
 SRS1791886,Gp0138786,SAMN05720223,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Hong Kong - AD_UKC111_MetaG,22.28,114.17,Hong Kong,,,,ERZ764804,MGYS00003395
-SRS1791802,Gp0138831,SAMN05720212,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC077_MetaG,42.35,-70.96,USA,,,,ERZ772708,MGYS00003410
-SRS1791805,Gp0138808,SAMN05720199,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Japan - AD_JPNNA6_MetaG,37.43,138.83,Japan,,,,ERZ773283,MGYS00003413
-SRS1791800,Gp0138832,SAMN05720211,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC078_MetaG,42.35,-70.96,USA,,,,ERZ764730,MGYS00003520
-SRS1687510,Gp0138807,SAMN05720200,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Japan - AD_JPNNA4_MetaG,37.43,138.83,Japan,,,,ERZ761562,MGYS00003623
-SRS826578,Stanley AS,SAMN03294203,Metagenome of Stanley AS,22.3,114.1,Hong Kong,,,,ERZ773282;ERZ773281,MGYS00003646
+SRS1791804,Gp0138812,SAMN05720167,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC075_MetaG,37.8,-122.27,USA,,,,ERZ778036,MGYS00004765
+SRS1791806,Gp0138806,SAMN05720220,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Japan - AD_JPNNA7_MetaG,37.43,138.83,Japan,,,,ERZ778037,MGYS00004766
 SRS1791882,Gp0138788,SAMN05720164,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Hong Kong - AD_UKC115_MetaG,22.28,114.17,Hong Kong,,,,ERZ778038,MGYS00004767
-SRS1687459,Gp0138800,SAMN05720203,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Japan - AD_JPNHW1_MetaG,35.92,139.63,Japan,,,,ERZ795026,MGYS00004907
 SRS1687462,Gp0138811,SAMN05720219,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC073_MetaG,37.8,-122.27,USA,,,,ERZ795029,MGYS00004910
-SRS1687464,Gp0138817,SAMN05720159,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC085_MetaG,39.88,-75.22,USA,,,,ERZ795031,MGYS00004912
-SRS1687458,Gp0138828,SAMN05720213,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_STIC10_MetaG,41.84,-87.68,USA,,,,ERZ795044,MGYS00004917
+SRS1687463,Gp0138833,SAMN05720146,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Japan - AD_JPNAS1_MetaG,43.77,142.37,Japan,,,,ERZ795030,MGYS00004911
+SRS1687472,Gp0138835,SAMN05720147,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Japan - AD_JPNAS3_MetaG,43.77,142.37,Japan,,,,ERZ795049,MGYS00004922
 SRS1791674,Gp0138781,SAMN05720284,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Hong Kong - AD_UKC117_MetaG,22.28,114.17,Hong Kong,,,,ERZ795053,MGYS00004926
 SRS1791740,Gp0138830,SAMN05720227,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC052_MetaG,42.12,-87.65,USA,,,,ERZ795056,MGYS00004929
+SRS1791743,Gp0138834,SAMN05720210,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Japan - AD_JPNAS2_MetaG,43.77,142.37,Japan,,,,ERZ795058,MGYS00004931
 SRS1791744,Gp0138819,SAMN05720168,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC045_MetaG,40.12,-87.63,USA,,,,ERZ795059,MGYS00004932
-SRS1791764,Gp0138809,SAMN05720281,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC125_MetaG,37.78,-122.42,USA,,,,ERZ795062,MGYS00004935
-SRS1791766,Gp0138816,SAMN05720158,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC083_MetaG,39.88,-75.22,USA,,,,ERZ795063,MGYS00004936
-SRS1791772,Gp0138829,SAMN05720145,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_STIC12_MetaG,41.84,-87.68,USA,,,,ERZ795064,MGYS00004937
+SRS1791745,Gp0138803,SAMN05720157,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Japan - AD_JPNMR2_MetaG,36.29,139.38,Japan,,,,ERZ795060,MGYS00004933
 SRS1792068,Gp0141809,SAMN05720189,"Anaerobic biogas reactor microbial communites from Washington, USA - Biogas_R1 time_0 SIP DNA",47.6525,-122.3049,"USA:Washington, USA",,,,ERZ795066,MGYS00004939
 SRS1914373,D5,SAMN06216280,Sewage sludge,30.59,121.14,"China:Songjiang, Shanghai",,,,ERZ795067,MGYS00004940
-SRS2212565,Gp0115559,SAMN06343848,"Active sludge microbial communities from Klosterneuburg, Austria, studying microevolution and ecology of nitrifiers - Klosterneuburg WWTP active sludge metagenome KNB5-Kit",48.3,16.2,Austria: Klosterneuburg,,,,ERZ795075,MGYS00004948
 SRS2212571,Gp0115564,SAMN06343852,"Active sludge microbial communities from Klosterneuburg, Austria, studying microevolution and ecology of nitrifiers - Klosterneuburg WWTP active sludge metagenome KNB14_supernatant",48.3,16.2,Austria: Klosterneuburg,,,,ERZ795076,MGYS00004949
-SRS1791647,Gp0138793,SAMN05720280,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from USA - AD_UKC097_MetaG,33.8,-118.28,USA,,,,ERZ795389,MGYS00004985
-SRS2212569,Gp0115562,SAMN06343850,"Active sludge microbial communities from Klosterneuburg, Austria, studying microevolution and ecology of nitrifiers - Klosterneuburg WWTP active sludge metagenome KNB14_bulk",48.3,16.2,Austria: Klosterneuburg,,,,ERZ795397,MGYS00004989
-SRS1791749,Gp0138837,SAMN05720195,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Canada - AD_UKC130_MetaG,49.25,-123.1,Canada,,,,ERZ746980,MGYS00004999
+SRS1687471,Gp0138836,SAMN05720170,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Canada - AD_UKC129_MetaG,49.25,-123.1,Canada,,,,ERZ795381,MGYS00004983
+SRS1060545,ES,SAMN04041125,ES,34.64,119.17,China,,,,ERZ795009,MGYS00005006
+SRS1060554,EG,SAMN04041126,EG,34.65,119.17,China,,,,ERZ795010,MGYS00005006
+SRS2422719,HS0,SAMN07488724,HS0,,,,,,,ERZ781404,MGYS00005011
+SRS2422978,HS5,SAMN07488725,HS5,,,,,,,ERZ781406,MGYS00005011
+SRS2422979,HS50,SAMN07488726,HS50,,,,,,,ERZ781405,MGYS00005011
+SRS3255898,BPA-DNA-1,SAMN08937787,DNA sample obtained before BPA adding (Phase I),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-0,sludge-water,ERZ782916,MGYS00005025
+SRS3255899,BPA-DNA-2,SAMN08937788,DNA sample obtained after BPA added for 14-15hrs,22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-14,sludge-water,ERZ782915,MGYS00005025
+SRS3255900,BPA-RNA-1,SAMN08937789,RNA sample obtained before BPA adding (Phase I),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-0-1,sludge-water,ERZ782927,MGYS00005025
+SRS3255901,BPA-RNA-2,SAMN08937790,RNA sample obtained before BPA adding (Phase I),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-0-2,sludge-water,ERZ782929,MGYS00005025
+SRS3255902,BPA-RNA-3,SAMN08937791,RNA sample obtained after BPA added for 2-3 hrs (Phase II),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-2-1,sludge-water,ERZ782928,MGYS00005025
+SRS3255903,BPA-RNA-4,SAMN08937792,RNA sample obtained after BPA added for 2-3 hrs (Phase II),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-2-2,sludge-water,ERZ782923,MGYS00005025
+SRS3255904,BPA-RNA-5,SAMN08937793,RNA sample obtained after BPA added for 14-15 hrs (Phase III),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-14-1,sludge-water,ERZ782930,MGYS00005025
+SRS3255905,BPA-RNA-6,SAMN08937794,RNA sample obtained after BPA added for 14-15 hrs (Phase III),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-14-2,sludge-water,ERZ782925,MGYS00005025
+SRS3255906,BPA-RNA-7,SAMN08937795,RNA sample obtained after BPA added for 24-25 hrs (Phase IV),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-24-1,sludge-water,ERZ782926,MGYS00005025
+SRS3255907,BPA-RNA-8,SAMN08937796,RNA sample obtained  after BPA added for 24-25 hrs (Phase IV),22.25,114.1667,China: Hong Kong,bisphenol A culture medium,BPA degrading-24-2,sludge-water,ERZ782924,MGYS00005025
 SRS976606,PtcB-09,SAMN03792071,Illumina HiSeq1500 shotgun-sequencing,-34.07,-59.07,,,wastewater treatment plant,activated sludge,ERZ794912;ERZ842394;SRR2107176;SRR2107177,MGYS00002058
 SRS976079,SwgA-13,SAMN03794762,Illumina HiSeq1500 shotgun-sequencing,-34.82,-58.17,,,wastewater treatment plant,activated sludge,ERZ794919;ERZ842397;SRR2107212;SRR2107213,MGYS00002058
 SRS976068,Txt-08,SAMN03794739,Illumina HiSeq1500 shotgun-sequencing,-34.84,-58.2,,,wastewater treatment plant,activated sludge,ERZ794913;ERZ794932;SRR2107178;SRR2107179,MGYS00002058
@@ -955,9 +905,50 @@ ERS1162596,Henriksdal-primary 233,SAMEA3991486,Henriksdal-primary 233,59.3107,18
 ERS1162597,Henriksdal-primary 234,SAMEA3991487,Henriksdal-primary 234,59.3107,18.1084,Sweden,anthropogenic terrestrial biome,sewage plant,raw primary sludge,ERR1414276,MGYS00001110
 ERS1162598,Henriksdal-primary 235,SAMEA3991488,Henriksdal-primary 235,59.3107,18.1084,Sweden,anthropogenic terrestrial biome,sewage plant,raw primary sludge,ERR1414277,MGYS00001110
 ERS1162599,Henriksdal-primary 236,SAMEA3991489,Henriksdal-primary 236,59.3107,18.1084,Sweden,anthropogenic terrestrial biome,sewage plant,raw primary sludge,ERR1414278,MGYS00001110
-ERS632924,AAW-3-2012,SAMEA3180052,Aalborg West Q3 2012,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764620,MGYS00005802
-ERS632917,AAW-4-2010,SAMEA3180045,Aalborg West Q4 2010,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764613,MGYS00005802
-ERS632927,EJB-4-2011,SAMEA3180055,Ejby Moelle Q4 2011,55.3995,10.4148,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764614,MGYS00005802
-ERS632929,EGA-2-2011,SAMEA3180057,Egaa Q2 2011,56.2131,10.2425,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764618,MGYS00005802
-ERS632918,AAW-5-2010-A,SAMEA3180046,Aalborg West Q5 2010 A,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764622,MGYS00005802
-ERS632919,AAW-5-2010-B,SAMEA3180047,Aalborg West Q2 2010 B,57.0495,9.8648,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERZ1764624,MGYS00005802
+SRS1791885,Gp0138790,SAMN05720209,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from China - AD_SCU002_MetaG,30.66,104.06,China,,,,ERZ1756056;OFEK01,MGYS00002316
+,,,,,,,,,,,MGYS00002316
+SRS1692508,Gp0138787,SAMN05720207,Active sludge microbial communities of municipal wastewater-treating anaerobic digesters from Hong Kong - AD_UKC113_MetaG,22.28,114.17,Hong Kong,,,,ERZ724020,MGYS00003512
+ERS805486,MBR Sludge,SAMEA3498337,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977407,MGYS00001392
+ERS805487,MBR Sludge,SAMEA3498338,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977409;ERR977408,MGYS00001392
+ERS805488,MBR Sludge,SAMEA3498339,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977410,MGYS00001392
+ERS805489,MBR Sludge,SAMEA3498340,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977423,MGYS00001392
+ERS805490,MBR Sludge,SAMEA3498341,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977424,MGYS00001392
+ERS805491,MBR Sludge,SAMEA3498342,MBR Sludge,57.05,9.8654,Denmark,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977425,MGYS00001392
+ERS805492,ENR4_A,SAMEA3498343,ENR4_A,43.3792,43.7239,Russia,oil well,oil well,biofilm material,ERR977403,MGYS00001392
+ERS805493,ENR4_E,SAMEA3498344,ENR4_E,43.3792,43.7239,Russia,oil well,oil well,biofilm material,ERR977404,MGYS00001392
+ERS805494,ENR4_F,SAMEA3498345,ENR4_F,43.3792,43.7239,Russia,oil well,oil well,biofilm material,ERR977405,MGYS00001392
+ERS805495,ENR6_N3,SAMEA3498346,ENR6_N3,43.3792,43.7239,Russia,oil well,oil well,biofilm material,ERR977406,MGYS00001392
+ERS805496,Vetmed_Pskit,SAMEA3498347,Vetmed_Pskit,48.2549,16.4293,Austria,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977411;ERR977413;ERR977412,MGYS00001392
+ERS805497,Vetmed_23,SAMEA3498348,Vetmed_23,48.2549,16.4293,Austria,wastewater treatment plant,wastewater treatment plant,activated sludge,ERR977415;ERR977416;ERR977414,MGYS00001392
+ERS805498,GWW_HP_F1,SAMEA3498349,GWW_HP_F1,52.1489,10.5428,Germany,water well,water well,biofilm material,ERR977417;ERR977419;ERR977418,MGYS00001392
+ERS805499,GWW_HP_D,SAMEA3498350,GWW_HP_D,52.1489,10.5428,Germany,water well,water well,biofilm material,ERR977421;ERR977420;ERR977422,MGYS00001392
+ERS1107870,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920736,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352952;ERR1352951,MGYS00000777
+ERS1107871,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920737,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352953;ERR1352954,MGYS00000777
+ERS1107872,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920738,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352955;ERR1352956,MGYS00000777
+ERS1107873,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920739,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352957;ERR1352958,MGYS00000777
+ERS1107874,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920740,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352959;ERR1352960,MGYS00000777
+ERS1107875,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920741,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352962;ERR1352961,MGYS00000777
+ERS1107846,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920712,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352903;ERR1352904,MGYS00000777
+ERS1107847,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920713,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352906;ERR1352905,MGYS00000777
+ERS1107848,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920714,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352907;ERR1352908,MGYS00000777
+ERS1107849,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920715,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352909;ERR1352910,MGYS00000777
+ERS1107860,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920726,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352932;ERR1352931,MGYS00000777
+ERS1107861,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920727,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352934;ERR1352933,MGYS00000777
+ERS1107862,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920728,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352935;ERR1352936,MGYS00000777
+ERS1107863,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920729,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352937;ERR1352938,MGYS00000777
+ERS1107864,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920730,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352940;ERR1352939,MGYS00000777
+ERS1107865,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920731,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352942;ERR1352941,MGYS00000777
+ERS1107866,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920732,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352944;ERR1352943,MGYS00000777
+ERS1107867,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920733,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352946;ERR1352945,MGYS00000777
+ERS1107850,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920716,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352911;ERR1352912,MGYS00000777
+ERS1107851,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920717,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352914;ERR1352913,MGYS00000777
+ERS1107858,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920724,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352928;ERR1352927,MGYS00000777
+ERS1107859,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920725,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352929;ERR1352930,MGYS00000777
+ERS1107868,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920734,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352948;ERR1352947,MGYS00000777
+ERS1107869,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920735,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352949;ERR1352950,MGYS00000777
+ERS1107852,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920718,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352915;ERR1352916,MGYS00000777
+ERS1107853,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920719,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352918;ERR1352917,MGYS00000777
+ERS1107854,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920720,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352920;ERR1352919,MGYS00000777
+ERS1107855,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920721,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352922;ERR1352921,MGYS00000777
+ERS1107856,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920722,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352924;ERR1352923,MGYS00000777
+ERS1107857,Processed metagenomic and transcriptomic activated sludge samples,SAMEA3920723,Processed metagenomic and transcriptomic activated sludge samples,47.4048,8.6097,Switzerland,wastewater,wastewater treatment plant,activated sludge,ERR1352925;ERR1352926,MGYS00000777

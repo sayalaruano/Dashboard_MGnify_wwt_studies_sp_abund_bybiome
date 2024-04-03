@@ -337,7 +337,7 @@ pcoa_species.update_traces(
 # Show the plot
 st.plotly_chart(pcoa_species, use_container_width=True)
 
-# Display sample information for the selected study
+# Display sample information for all studies
 st.subheader("Sample Information")
 
 builder = GridOptionsBuilder.from_dataframe(sample_info)
@@ -355,6 +355,34 @@ st.download_button(
     label="Download sample data as CSV",
     data=sample_info_csv,
     file_name=f'sample_info_allbiomes.csv',
+    mime='text/csv',
+)
+
+# Display merged abundance data for all studies
+st.subheader(f'Abundance table for all studies at species level')
+
+# Reset the index to make it a column
+abund_table_with_index = abund_tax_merged.reset_index()
+
+# Ensure the index column is the first one
+column_order = ["Genus_Species"] + [col for col in abund_table_with_index.columns if col != "Genus_Species"]
+abund_table_with_index = abund_table_with_index[column_order]
+
+builder = GridOptionsBuilder.from_dataframe(abund_table_with_index)
+builder.configure_default_column(editable=True, groupable=True)
+builder.configure_side_bar(filters_panel = True, columns_panel = True)
+builder.configure_selection(selection_mode="multiple")
+builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
+go = builder.build()
+
+AgGrid(abund_table_with_index, gridOptions=go)
+
+# Button to download the data
+abund_table_csv = convert_df(abund_table_with_index)
+st.download_button(
+    label=f"Download abundance data as CSV",
+    data=abund_table_csv,
+    file_name=f'abund_table_merged_allstudies.csv',
     mime='text/csv',
 )
 

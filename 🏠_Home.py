@@ -8,7 +8,7 @@ from PIL import Image
 # General options 
 im = Image.open("img/favicon.ico")
 st.set_page_config(
-    page_title="Mgnify waste water treatment studies and samples summary",
+    page_title="Summary and EDA of waste water treatment studies from Mgnify at species level and combined by biome",
     page_icon=im,
     layout="wide",
 )
@@ -43,10 +43,10 @@ def load_studies_data(filename):
 # Loading the Mgnify waste water treatment studies data
 # This will be done only once and all the pages will have access to the data
 if 'studies_data' not in st.session_state:
-    st.session_state.studies_data = load_studies_data("wwt_studies_more_median_taxa_bybiome.csv")
+    st.session_state.studies_data = load_studies_data("wwtstudies_greater_mediantaxa_perbiome_species.csv")
 
 # Add a title and info about the app
-st.title('Summary and EDA of waste water treatment studies from Mgnify combined by biomes')
+st.title('Summary and EDA of waste water treatment studies from Mgnify at species level and combined by biome')
 
 with st.expander('About this app'):
     st.write('''

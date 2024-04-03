@@ -17,7 +17,7 @@ from PIL import Image
 # General options 
 im = Image.open("img/favicon.ico")
 st.set_page_config(
-    page_title="Mgnify waste water treatment studies and samples summary",
+    page_title="Summary and EDA of waste water treatment studies from Mgnify at species level and combined by biome",
     page_icon=im,
     layout="wide",
 )
@@ -43,8 +43,7 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 @st.cache_data
-# Function to load abundance table for a specific study
-def load_abund_table(selected_study, phylum):
+def load_abund_table(selected_study, tax_rank):
     # Set the folder name 
     folder_path = f"Abundance_tables/{selected_study}/"
 
@@ -52,16 +51,23 @@ def load_abund_table(selected_study, phylum):
     broad_pattern = f"{selected_study}*taxonomy*.csv"
     file_list = glob.glob(os.path.join(folder_path, broad_pattern))
 
-    if phylum:
+    if tax_rank == 'phylum':
         # Filtering for phylum taxonomy files
         filtered_files = [f for f in file_list if 'phylum_taxonomy' in f]
-    else:
-        # Filtering out unwanted files (those with '_phylum_')
-        filtered_files = [f for f in file_list if '_phylum_' not in f]
+    elif tax_rank == 'genus':
+        # Filtering for genus taxonomy files
+        filtered_files = [f for f in file_list if 'genus_taxonomy' in f]
+    elif tax_rank == 'species':
+        # Filtering for species taxonomy files
+        filtered_files = [f for f in file_list if 'species_taxonomy' in f]
 
     # Check if the filtered list is not empty
     if filtered_files:
         filename = filtered_files[0]  # Selecting the first matching file
+        # Check if the file has more than one row
+        if os.path.getsize(filename) <= 1:
+            print(f"File '{filename}' for the study '{selected_study}' is empty.")
+            return None
     else:
         print(f"No files found for the study '{selected_study}' in folder '{folder_path}'.")
         return None
@@ -72,10 +78,10 @@ def load_abund_table(selected_study, phylum):
     return abund_table
 
 # Function to preprocess abundance table for a specific study
-def preprocess_abund_table(abund_table,phylum):
+def preprocess_abund_table(abund_table, tax_rank):
     # Delete rows with NANs in all columns
     abund_table = abund_table.dropna(how='all')
-    if phylum:
+    if tax_rank == 'phylum':
         # Delete kingdom and superkingdom columns
         if 'superkingdom' in abund_table.columns:
             abund_table = abund_table.drop(columns=['superkingdom', 'kingdom'])
@@ -85,7 +91,7 @@ def preprocess_abund_table(abund_table,phylum):
         # Set the phylum column as index
         abund_table = abund_table.set_index('phylum')
     
-    else:
+    elif tax_rank == 'genus':
         # Delete extra taxonomic columns
         # Check available taxonomic levels and drop the corresponding columns
         taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Family_Genus']
@@ -95,6 +101,17 @@ def preprocess_abund_table(abund_table,phylum):
         
         # Set the genus column as index
         abund_table = abund_table.set_index('Genus')
+
+    elif tax_rank == 'species':
+        # Delete extra taxonomic columns
+        # Check available taxonomic levels and drop the corresponding columns
+        taxonomic_levels = ['Superkingdom', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']
+        for level in taxonomic_levels:
+            if level in abund_table.columns:
+                abund_table = abund_table.drop(columns=level)
+        
+        # Set the genus column as index
+        abund_table = abund_table.set_index('Genus_Species')
 
     return abund_table
 
@@ -114,7 +131,7 @@ selected_study = st.sidebar.selectbox("Mgnify study:", studies_list)
 # Create a selectbox to choose the taxonomic rank
 tax_rank = st.sidebar.selectbox(
     "Taxonomic Rank:",
-    options=["Phylum", "Genus"]
+    options=["Phylum", "Genus", "Species"]
 )
 
 # Add aditional info
@@ -128,7 +145,7 @@ st.sidebar.header('Contact')
 st.sidebar.write('If you have any comments or suggestions about this work, please [create an issue](https://github.com/sayalaruano/Dashboard_MGnify_wwt_studies/issues/new) in the GitHub repository of this project.')
     
 # Add a title and info about the app
-st.title('Summary and EDA of waste water treatment studies from Mgnify combined by biomes')
+st.title('Summary and EDA of waste water treatment studies from Mgnify at species level and combined by biome')
 
 # Load data for the selected study
 study_info, sample_info = load_study_data(st.session_state.studies_data, selected_study)
@@ -184,11 +201,14 @@ st.download_button(
 
 # Load and preprocess abundance table for the selected study and taxonomic rank. Store it in an independent variable
 if tax_rank == 'Phylum':
-    abund_table = load_abund_table(selected_study, phylum=True)
-    abund_table = preprocess_abund_table(abund_table, phylum=True)
-else:  # Genus
-    abund_table = load_abund_table(selected_study, phylum=False)
-    abund_table = preprocess_abund_table(abund_table, phylum=False)
+    abund_table = load_abund_table(selected_study, tax_rank='phylum')
+    abund_table = preprocess_abund_table(abund_table, tax_rank='phylum')
+elif tax_rank == 'Genus':
+    abund_table = load_abund_table(selected_study, tax_rank='genus')
+    abund_table = preprocess_abund_table(abund_table, tax_rank='genus')
+elif tax_rank == 'Species':
+    abund_table = load_abund_table(selected_study, tax_rank='species')
+    abund_table = preprocess_abund_table(abund_table, tax_rank='species')
 
 # Display abundance table for the selected study
 st.subheader(f"Abundance table at {tax_rank} level")
@@ -227,8 +247,10 @@ if len(sample_info) > 2:
     # Reshape abundance df so that the assembly_run_ids become a column, considering the phylum or genus column as the index
     if tax_rank == 'Phylum':
         abund_df_reshaped = abund_table.reset_index().melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
-    else:  # Genus
+    elif tax_rank == 'Genus':
         abund_df_reshaped = abund_table.reset_index().melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
+    elif tax_rank == 'Species':
+        abund_df_reshaped = abund_table.reset_index().melt(id_vars='Genus_Species', var_name='assembly_run_ids', value_name='count')
     
     # Split the multiple IDs in the assembly_run_ids column of df1
     sample_info['assembly_run_ids'] = sample_info['assembly_run_ids'].str.split(';')
@@ -360,9 +382,12 @@ if len(sample_info) > 2:
         abund_table_top10 = abund_table_reset.melt(id_vars='phylum', var_name='assembly_run_ids', value_name='count')
         # Rename the column
         abund_table_top10 = abund_table_top10.rename(columns={'phylum': 'taxa'})
-    else:  # Genus
+    elif tax_rank == 'Genus':
         abund_table_top10 = abund_table_reset.melt(id_vars='Genus', var_name='assembly_run_ids', value_name='count')
         abund_table_top10 = abund_table_top10.rename(columns={'Genus': 'taxa'})
+    elif tax_rank == 'Species':
+        abund_table_top10 = abund_table_reset.melt(id_vars='Genus_Species', var_name='assembly_run_ids', value_name='count')
+        abund_table_top10 = abund_table_top10.rename(columns={'Genus_Species': 'taxa'})
 
     # Group by taxonomic rank and sum the counts
     abund_table_top10 = abund_table_top10.groupby('taxa').sum().reset_index()
